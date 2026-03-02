@@ -61,10 +61,10 @@ export default function Index() {
             className="max-w-2xl mx-auto text-center"
           >
             <h1 className="text-4xl md:text-5xl font-extrabold text-primary-foreground mb-4 leading-tight">
-              Encontre e agende em <span className="text-accent">segundos</span>
+              Agende em <span className="text-accent">segundos</span>, não em minutos.
             </h1>
             <p className="text-lg text-primary-foreground/70 mb-8">
-              Descubra os melhores profissionais perto de você e agende online.
+              Descubra os melhores profissionais perto de você e reserve online com o <strong>Reservagram</strong>.
             </p>
             <div className="relative max-w-lg mx-auto">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />

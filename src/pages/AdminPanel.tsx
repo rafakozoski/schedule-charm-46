@@ -55,7 +55,7 @@ export default function AdminPanel() {
     <div className="min-h-screen">
       <div className="container mx-auto px-6 py-10">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold mb-2">Painel Administrativo</h1>
+          <h1 className="text-3xl font-bold mb-2">Painel Reservagram</h1>
           <p className="text-muted-foreground mb-8">Gerencie serviços, profissionais e disponibilidade</p>
         </motion.div>
 
