@@ -20,7 +20,7 @@ export function HeroSection() {
             <br />não em minutos.
           </h1>
           <p className="text-lg md:text-xl text-primary-foreground/70 mb-10 leading-relaxed">
-            Sistema inteligente de agendamento integrado ao Google Agenda.
+            Sistema inteligente de agendamento online.
             Simples para seus clientes, poderoso para seu negócio.
           </p>
           <div className="flex flex-wrap gap-6">

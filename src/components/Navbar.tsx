@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Calendar, LayoutDashboard, Menu, X } from "lucide-react";
+import { Calendar, LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin");
+  const { user, signOut } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b">
@@ -15,21 +17,36 @@ export function Navbar() {
           <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center">
             <Calendar className="w-4 h-4 text-primary-foreground" />
           </div>
-          <span className="font-bold text-lg">AgendaFácil</span>
+          <span className="font-bold text-lg" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Reservagram</span>
         </Link>
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-3">
           <Link to="/">
             <Button variant={!isAdmin ? "default" : "ghost"} size="sm">
               <Calendar className="w-4 h-4 mr-2" />
               Agendar
             </Button>
           </Link>
-          <Link to="/admin">
-            <Button variant={isAdmin ? "default" : "ghost"} size="sm">
-              <LayoutDashboard className="w-4 h-4 mr-2" />
-              Painel Admin
-            </Button>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/admin">
+                <Button variant={isAdmin ? "default" : "ghost"} size="sm">
+                  <LayoutDashboard className="w-4 h-4 mr-2" />
+                  Painel
+                </Button>
+              </Link>
+              <Button variant="ghost" size="sm" onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth">
+              <Button variant="ghost" size="sm">
+                <LogIn className="w-4 h-4 mr-2" />
+                Entrar
+              </Button>
+            </Link>
+          )}
         </div>
         <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen(!open)}>
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -40,9 +57,20 @@ export function Navbar() {
           <Link to="/" onClick={() => setOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">Agendar</Button>
           </Link>
-          <Link to="/admin" onClick={() => setOpen(false)}>
-            <Button variant="ghost" className="w-full justify-start">Painel Admin</Button>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/admin" onClick={() => setOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">Painel</Button>
+              </Link>
+              <Button variant="ghost" className="w-full justify-start" onClick={() => { signOut(); setOpen(false); }}>
+                Sair
+              </Button>
+            </>
+          ) : (
+            <Link to="/auth" onClick={() => setOpen(false)}>
+              <Button variant="ghost" className="w-full justify-start">Entrar</Button>
+            </Link>
+          )}
         </div>
       )}
     </nav>
