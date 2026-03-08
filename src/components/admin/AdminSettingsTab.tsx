@@ -214,6 +214,14 @@ export function AdminSettingsTab() {
             <Store className="w-5 h-5" />
             Empresas Cadastradas ({businesses.length})
           </CardTitle>
+          <Button
+            size="sm"
+            className="gradient-primary text-primary-foreground"
+            onClick={() => { setBizForm(emptyBizForm); setShowNewBiz(true); }}
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Nova Empresa
+          </Button>
         </CardHeader>
         <CardContent className="space-y-3">
           {businesses.map((biz) => (
