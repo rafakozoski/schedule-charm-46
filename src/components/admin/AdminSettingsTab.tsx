@@ -7,17 +7,21 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Star, Loader2, Settings, Store, Edit, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AdminSettingsTab() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newCatName, setNewCatName] = useState("");
   const [editBiz, setEditBiz] = useState<any>(null);
-  const [bizForm, setBizForm] = useState({ name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" });
   const [showNewBiz, setShowNewBiz] = useState(false);
+  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" };
+  const [bizForm, setBizForm] = useState(emptyBizForm);
 
   const { data: categories = [], isLoading: catLoading } = useQuery({
     queryKey: ["categories"],
@@ -78,6 +82,30 @@ export function AdminSettingsTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["all-businesses"] });
       toast.success("Empresa removida");
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const createBusiness = useMutation({
+    mutationFn: async (form: typeof emptyBizForm) => {
+      if (!form.name.trim() || !form.slug.trim()) throw new Error("Nome e slug são obrigatórios");
+      const { error } = await supabase.from("businesses").insert({
+        name: form.name.trim(),
+        slug: form.slug.trim(),
+        category: form.category,
+        city: form.city,
+        neighborhood: form.neighborhood,
+        phone: form.phone,
+        description: form.description,
+        owner_id: user?.id,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-businesses"] });
+      setShowNewBiz(false);
+      setBizForm(emptyBizForm);
+      toast.success("Empresa criada com sucesso!");
     },
     onError: (err: any) => toast.error(err.message),
   });
@@ -186,6 +214,14 @@ export function AdminSettingsTab() {
             <Store className="w-5 h-5" />
             Empresas Cadastradas ({businesses.length})
           </CardTitle>
+          <Button
+            size="sm"
+            className="gradient-primary text-primary-foreground"
+            onClick={() => { setBizForm(emptyBizForm); setShowNewBiz(true); }}
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Nova Empresa
+          </Button>
         </CardHeader>
         <CardContent className="space-y-3">
           {businesses.map((biz) => (
@@ -292,6 +328,66 @@ export function AdminSettingsTab() {
             >
               {updateBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Salvar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Business Dialog */}
+      <Dialog open={showNewBiz} onOpenChange={setShowNewBiz}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Nova Empresa</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Nome *</Label>
+              <Input value={bizForm.name} onChange={(e) => {
+                const name = e.target.value;
+                const slug = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                setBizForm({ ...bizForm, name, slug });
+              }} placeholder="Nome da empresa" />
+            </div>
+            <div>
+              <Label>Slug (URL) *</Label>
+              <Input value={bizForm.slug} onChange={(e) => setBizForm({ ...bizForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") })} placeholder="minha-empresa" />
+            </div>
+            <div>
+              <Label>Categoria</Label>
+              <Select value={bizForm.category} onValueChange={(v) => setBizForm({ ...bizForm, category: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cidade</Label>
+                <Input value={bizForm.city} onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })} />
+              </div>
+              <div>
+                <Label>Bairro</Label>
+                <Input value={bizForm.neighborhood} onChange={(e) => setBizForm({ ...bizForm, neighborhood: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>Telefone</Label>
+              <Input value={bizForm.phone} onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })} />
+            </div>
+            <div>
+              <Label>Descrição</Label>
+              <Textarea value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} placeholder="Descrição da empresa" />
+            </div>
+            <Button
+              className="w-full gradient-primary text-primary-foreground"
+              onClick={() => createBusiness.mutate(bizForm)}
+              disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim()}
+            >
+              {createBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+              Criar Empresa
             </Button>
           </div>
         </DialogContent>
