@@ -332,6 +332,66 @@ export function AdminSettingsTab() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Create Business Dialog */}
+      <Dialog open={showNewBiz} onOpenChange={setShowNewBiz}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Nova Empresa</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Nome *</Label>
+              <Input value={bizForm.name} onChange={(e) => {
+                const name = e.target.value;
+                const slug = name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                setBizForm({ ...bizForm, name, slug });
+              }} placeholder="Nome da empresa" />
+            </div>
+            <div>
+              <Label>Slug (URL) *</Label>
+              <Input value={bizForm.slug} onChange={(e) => setBizForm({ ...bizForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") })} placeholder="minha-empresa" />
+            </div>
+            <div>
+              <Label>Categoria</Label>
+              <Select value={bizForm.category} onValueChange={(v) => setBizForm({ ...bizForm, category: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cidade</Label>
+                <Input value={bizForm.city} onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })} />
+              </div>
+              <div>
+                <Label>Bairro</Label>
+                <Input value={bizForm.neighborhood} onChange={(e) => setBizForm({ ...bizForm, neighborhood: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>Telefone</Label>
+              <Input value={bizForm.phone} onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })} />
+            </div>
+            <div>
+              <Label>Descrição</Label>
+              <Textarea value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} placeholder="Descrição da empresa" />
+            </div>
+            <Button
+              className="w-full gradient-primary text-primary-foreground"
+              onClick={() => createBusiness.mutate(bizForm)}
+              disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim()}
+            >
+              {createBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
+              Criar Empresa
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
