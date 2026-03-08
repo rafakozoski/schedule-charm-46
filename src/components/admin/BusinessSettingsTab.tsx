@@ -155,6 +155,21 @@ export function BusinessSettingsTab() {
     enabled: !!business,
   });
 
+  const seedAvailability = async (businessId: string) => {
+    const { data: existing } = await supabase.from("availability").select("id").eq("business_id", businessId).limit(1);
+    if (!existing || existing.length === 0) {
+      await supabase.from("availability").insert(
+        [0,1,2,3,4,5,6].map(d => ({
+          business_id: businessId,
+          day_of_week: d,
+          start_time: "09:00",
+          end_time: "18:00",
+          enabled: d >= 1 && d <= 5,
+        }))
+      );
+    }
+  };
+
   const saveBusiness = useMutation({
     mutationFn: async () => {
       const payload = {
@@ -164,20 +179,14 @@ export function BusinessSettingsTab() {
       if (business) {
         const { error } = await supabase.from("businesses").update(payload).eq("id", business.id);
         if (error) throw error;
+        // Seed availability if missing for existing business
+        await seedAvailability(business.id);
       } else {
         const { error } = await supabase.from("businesses").insert({ ...payload, owner_id: user!.id });
         if (error) throw error;
         const { data: newBiz } = await supabase.from("businesses").select("id").eq("owner_id", user!.id).single();
         if (newBiz) {
-          await supabase.from("availability").insert(
-            [0,1,2,3,4,5,6].map(d => ({
-              business_id: newBiz.id,
-              day_of_week: d,
-              start_time: "09:00",
-              end_time: "18:00",
-              enabled: d >= 1 && d <= 5,
-            }))
-          );
+          await seedAvailability(newBiz.id);
         }
       }
     },

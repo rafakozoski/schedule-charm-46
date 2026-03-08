@@ -6,13 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, Star, Loader2, Settings } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, Trash2, Star, Loader2, Settings, Store, Edit, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 
 export function AdminSettingsTab() {
   const queryClient = useQueryClient();
   const [newCatName, setNewCatName] = useState("");
+  const [editBiz, setEditBiz] = useState<any>(null);
+  const [bizForm, setBizForm] = useState({ name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" });
+  const [showNewBiz, setShowNewBiz] = useState(false);
 
   const { data: categories = [], isLoading: catLoading } = useQuery({
     queryKey: ["categories"],
@@ -41,6 +46,40 @@ export function AdminSettingsTab() {
       queryClient.invalidateQueries({ queryKey: ["all-businesses"] });
       toast.success("Destaque atualizado");
     },
+  });
+
+  const updateBusiness = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
+      const { error } = await supabase.from("businesses").update(updates).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-businesses"] });
+      setEditBiz(null);
+      toast.success("Empresa atualizada");
+    },
+    onError: (err: any) => toast.error(err.message),
+  });
+
+  const deleteBusiness = useMutation({
+    mutationFn: async (id: string) => {
+      // Delete related data first
+      await supabase.from("availability").delete().eq("business_id", id);
+      await supabase.from("bookings").delete().eq("business_id", id);
+      await supabase.from("professional_services").delete().in(
+        "professional_id",
+        (await supabase.from("professionals").select("id").eq("business_id", id)).data?.map(p => p.id) || []
+      );
+      await supabase.from("professionals").delete().eq("business_id", id);
+      await supabase.from("services").delete().eq("business_id", id);
+      const { error } = await supabase.from("businesses").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all-businesses"] });
+      toast.success("Empresa removida");
+    },
+    onError: (err: any) => toast.error(err.message),
   });
 
   const addCategory = useMutation({
@@ -77,6 +116,19 @@ export function AdminSettingsTab() {
       toast.success("Categoria removida");
     },
   });
+
+  const openEditBiz = (biz: any) => {
+    setEditBiz(biz);
+    setBizForm({
+      name: biz.name || "",
+      slug: biz.slug || "",
+      category: biz.category || "beleza",
+      city: biz.city || "",
+      neighborhood: biz.neighborhood || "",
+      phone: biz.phone || "",
+      description: biz.description || "",
+    });
+  };
 
   if (catLoading || bizLoading) {
     return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>;
@@ -127,12 +179,12 @@ export function AdminSettingsTab() {
         </CardContent>
       </Card>
 
-      {/* Featured Businesses */}
+      {/* Business Management */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <Star className="w-5 h-5" />
-            Empresas em Destaque
+            <Store className="w-5 h-5" />
+            Empresas Cadastradas ({businesses.length})
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -142,13 +194,45 @@ export function AdminSettingsTab() {
                 checked={biz.featured}
                 onCheckedChange={(featured) => toggleFeatured.mutate({ id: biz.id, featured })}
               />
-              <div className="flex-1">
-                <span className="font-medium">{biz.name}</span>
-                <span className="text-sm text-muted-foreground ml-2">/{biz.slug}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium truncate">{biz.name}</span>
+                  {biz.featured && (
+                    <Badge className="gradient-accent text-accent-foreground text-xs shrink-0">
+                      <Star className="w-3 h-3 mr-1" />
+                      Destaque
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                  <span>/{biz.slug}</span>
+                  {biz.city && <span>• {biz.city}</span>}
+                  {biz.neighborhood && <span>• {biz.neighborhood}</span>}
+                  <Badge variant="outline" className="text-xs">{biz.category}</Badge>
+                </div>
               </div>
-              {biz.featured && (
-                <Badge className="gradient-accent text-accent-foreground text-xs">Destaque</Badge>
-              )}
+              <div className="flex gap-1 shrink-0">
+                <Button variant="ghost" size="icon" onClick={() => openEditBiz(biz)} title="Editar">
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button variant="ghost" size="icon" asChild title="Ver página">
+                  <a href={`/${biz.slug}`} target="_blank" rel="noopener noreferrer">
+                    <Eye className="w-4 h-4" />
+                  </a>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (window.confirm(`Remover "${biz.name}"? Todos os dados serão perdidos.`)) {
+                      deleteBusiness.mutate(biz.id);
+                    }
+                  }}
+                  title="Remover"
+                >
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
             </div>
           ))}
           {businesses.length === 0 && (
@@ -156,6 +240,62 @@ export function AdminSettingsTab() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Business Dialog */}
+      <Dialog open={!!editBiz} onOpenChange={(open) => !open && setEditBiz(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Editar Empresa</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Nome</Label>
+              <Input value={bizForm.name} onChange={(e) => setBizForm({ ...bizForm, name: e.target.value })} />
+            </div>
+            <div>
+              <Label>Slug (URL)</Label>
+              <Input value={bizForm.slug} onChange={(e) => setBizForm({ ...bizForm, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "") })} />
+            </div>
+            <div>
+              <Label>Categoria</Label>
+              <Select value={bizForm.category} onValueChange={(v) => setBizForm({ ...bizForm, category: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem key={c.id} value={c.slug}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Cidade</Label>
+                <Input value={bizForm.city} onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })} />
+              </div>
+              <div>
+                <Label>Bairro</Label>
+                <Input value={bizForm.neighborhood} onChange={(e) => setBizForm({ ...bizForm, neighborhood: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>Telefone</Label>
+              <Input value={bizForm.phone} onChange={(e) => setBizForm({ ...bizForm, phone: e.target.value })} />
+            </div>
+            <div>
+              <Label>Descrição</Label>
+              <Input value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} />
+            </div>
+            <Button
+              className="w-full gradient-primary text-primary-foreground"
+              onClick={() => editBiz && updateBusiness.mutate({ id: editBiz.id, updates: bizForm })}
+              disabled={updateBusiness.isPending}
+            >
+              {updateBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Salvar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
