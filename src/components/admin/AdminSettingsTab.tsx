@@ -15,11 +15,13 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AdminSettingsTab() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newCatName, setNewCatName] = useState("");
   const [editBiz, setEditBiz] = useState<any>(null);
-  const [bizForm, setBizForm] = useState({ name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" });
   const [showNewBiz, setShowNewBiz] = useState(false);
+  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" };
+  const [bizForm, setBizForm] = useState(emptyBizForm);
 
   const { data: categories = [], isLoading: catLoading } = useQuery({
     queryKey: ["categories"],
