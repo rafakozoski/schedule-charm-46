@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Star, Loader2, Settings, Store, Edit, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export function AdminSettingsTab() {
   const queryClient = useQueryClient();
