@@ -74,7 +74,7 @@ export function Navbar() {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/admin/login">
+                <Link to="/login">
                   <Button variant="default" size="sm" className="gradient-primary text-primary-foreground">
                     <LogIn className="w-4 h-4 mr-2" />
                     Entrar
@@ -118,7 +118,7 @@ export function Navbar() {
               </Button>
             </>
           ) : (
-            <Link to="/admin/login" onClick={() => setOpen(false)}>
+            <Link to="/login" onClick={() => setOpen(false)}>
               <Button variant="ghost" className="w-full justify-start">
                 <LogIn className="w-4 h-4 mr-2" />
                 Entrar

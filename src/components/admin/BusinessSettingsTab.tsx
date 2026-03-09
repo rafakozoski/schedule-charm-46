@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AutocompleteInput } from "@/components/ui/autocomplete-input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
@@ -123,6 +124,15 @@ export function BusinessSettingsTab() {
       return data;
     },
     enabled: !!business,
+  });
+
+  const { data: serviceCatalog = [] } = useQuery({
+    queryKey: ["service-catalog"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("service_catalog").select("name").order("name");
+      if (error) throw error;
+      return data.map((s) => s.name);
+    },
   });
 
   const seedAvailability = async (businessId: string) => {
@@ -391,7 +401,12 @@ export function BusinessSettingsTab() {
                 <div key={svc.id} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 rounded-lg border items-end">
                   <div className="md:col-span-2">
                     <Label>Nome</Label>
-                    <Input defaultValue={svc.name} onBlur={(e) => updateService.mutate({ id: svc.id, updates: { name: e.target.value } })} />
+                    <AutocompleteInput
+                      suggestions={serviceCatalog}
+                      value={svc.name}
+                      onValueChange={(val) => updateService.mutate({ id: svc.id, updates: { name: val } })}
+                      placeholder="Digite o nome do serviço..."
+                    />
                   </div>
                   <div>
                     <Label>Preço (R$)</Label>
