@@ -1,0 +1,68 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+
+interface BannerCarouselProps {
+  position: "top" | "middle";
+}
+
+export function BannerCarousel({ position }: BannerCarouselProps) {
+  const { data: banners = [] } = useQuery({
+    queryKey: ["banners", position],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("banners")
+        .select("*")
+        .eq("position", position)
+        .eq("enabled", true)
+        .order("sort_order");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  if (banners.length === 0) return null;
+
+  const content = banners.length === 1 ? (
+    <BannerImage banner={banners[0]} />
+  ) : (
+    <Carousel opts={{ loop: true }} className="w-full">
+      <CarouselContent>
+        {banners.map((banner) => (
+          <CarouselItem key={banner.id}>
+            <BannerImage banner={banner} />
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious className="left-2" />
+      <CarouselNext className="right-2" />
+    </Carousel>
+  );
+
+  return (
+    <section className="container mx-auto px-6 py-6">
+      {content}
+    </section>
+  );
+}
+
+function BannerImage({ banner }: { banner: any }) {
+  const img = (
+    <img
+      src={banner.image_url}
+      alt="Banner"
+      className="w-full h-auto max-h-64 object-cover rounded-xl"
+      loading="lazy"
+    />
+  );
+
+  if (banner.link_url) {
+    return (
+      <a href={banner.link_url} target="_blank" rel="noopener noreferrer">
+        {img}
+      </a>
+    );
+  }
+
+  return img;
+}
