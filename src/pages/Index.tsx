@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BannerCarousel } from "@/components/BannerCarousel";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -149,6 +150,9 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Banner top */}
+      <BannerCarousel position="top" />
+
       {/* Featured */}
       {featured.length > 0 && (
         <section className="py-12 px-6">
@@ -166,6 +170,9 @@ export default function Index() {
           </div>
         </section>
       )}
+
+      {/* Banner middle */}
+      <BannerCarousel position="middle" />
 
       {/* Results */}
       <section className="py-12 px-6 bg-secondary/30">
