@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Calendar, LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
+import { Calendar, LayoutDashboard, LogIn, LogOut, Menu, Shield, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/admin");
+  const isPanel = location.pathname.startsWith("/admin") || location.pathname.startsWith("/painel");
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
+  const panelLink = isAdmin ? "/admin" : "/painel";
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b">
