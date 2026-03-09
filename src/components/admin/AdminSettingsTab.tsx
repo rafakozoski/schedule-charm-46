@@ -432,7 +432,7 @@ export function AdminSettingsTab() {
                 </Button>
               </div>
               {ownerLookup && (
-                <p className="text-xs text-emerald-600 mt-1">✓ Usuário encontrado: {ownerLookup.email}</p>
+                <p className="text-xs text-primary mt-1 font-medium">✓ Usuário encontrado: {ownerLookup.email}</p>
               )}
               {ownerLookupError && (
                 <p className="text-xs text-destructive mt-1">{ownerLookupError}</p>
