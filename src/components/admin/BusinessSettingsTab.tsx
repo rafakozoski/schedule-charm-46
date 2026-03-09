@@ -10,7 +10,9 @@ import { AutocompleteInput } from "@/components/ui/autocomplete-input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Plus, Trash2, Save, Loader2, Store, Users, Package, Clock, ImagePlus, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Trash2, Save, Loader2, Store, Users, Package, Clock, ImagePlus, X, UserPlus, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { ESTADOS, getCitiesByState, getNeighborhoods, getAllCitiesWithState, findStateByCity } from "@/lib/locations";
 
@@ -434,34 +436,14 @@ export function BusinessSettingsTab() {
           </Card>
 
           {/* Professionals */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center gap-2"><Users className="w-5 h-5" />Profissionais</CardTitle>
-              <Button onClick={() => addProfessional.mutate()} size="sm" className="gradient-primary text-primary-foreground">
-                <Plus className="w-4 h-4 mr-1" /> Adicionar
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {professionals.map((pro) => (
-                <div key={pro.id} className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 rounded-lg border items-end">
-                  <div>
-                    <Label>Nome</Label>
-                    <Input defaultValue={pro.name} onBlur={(e) => updateProfessional.mutate({ id: pro.id, updates: { name: e.target.value } })} />
-                  </div>
-                  <div>
-                    <Label>Função</Label>
-                    <Input defaultValue={pro.role} onBlur={(e) => updateProfessional.mutate({ id: pro.id, updates: { role: e.target.value } })} />
-                  </div>
-                  <div className="flex justify-end">
-                    <Button variant="ghost" size="icon" onClick={() => deleteProfessional.mutate(pro.id)}>
-                      <Trash2 className="w-4 h-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {professionals.length === 0 && <p className="text-muted-foreground text-center py-4">Nenhum profissional cadastrado.</p>}
-            </CardContent>
-          </Card>
+          <ProfessionalsSection
+            business={business}
+            professionals={professionals}
+            addProfessional={addProfessional}
+            updateProfessional={updateProfessional}
+            deleteProfessional={deleteProfessional}
+            queryClient={queryClient}
+          />
 
           {/* Availability */}
           <Card>
@@ -495,5 +477,132 @@ export function BusinessSettingsTab() {
         </>
       )}
     </div>
+  );
+}
+
+function ProfessionalsSection({ business, professionals, addProfessional, updateProfessional, deleteProfessional, queryClient }: any) {
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [selectedPro, setSelectedPro] = useState<any>(null);
+  const [userForm, setUserForm] = useState({ email: "", password: "" });
+  const [creating, setCreating] = useState(false);
+
+  const createProfessionalUser = async () => {
+    if (!selectedPro || !userForm.email || !userForm.password) return;
+    setCreating(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke("create-professional-user", {
+        body: {
+          professionalId: selectedPro.id,
+          email: userForm.email,
+          password: userForm.password,
+        },
+      });
+      if (res.error) throw new Error(res.error.message);
+      if (res.data?.error) throw new Error(res.data.error);
+      queryClient.invalidateQueries({ queryKey: ["biz-professionals"] });
+      setShowCreateUser(false);
+      setUserForm({ email: "", password: "" });
+      setSelectedPro(null);
+      toast.success("Usuário criado e vinculado ao profissional!");
+    } catch (err: any) {
+      toast.error(err.message || "Erro ao criar usuário");
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  return (
+    <>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2"><Users className="w-5 h-5" />Profissionais</CardTitle>
+          <Button onClick={() => addProfessional.mutate()} size="sm" className="gradient-primary text-primary-foreground">
+            <Plus className="w-4 h-4 mr-1" /> Adicionar
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {professionals.map((pro: any) => (
+            <div key={pro.id} className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 rounded-lg border items-end">
+              <div>
+                <Label>Nome</Label>
+                <Input defaultValue={pro.name} onBlur={(e) => updateProfessional.mutate({ id: pro.id, updates: { name: e.target.value } })} />
+              </div>
+              <div>
+                <Label>Função</Label>
+                <Input defaultValue={pro.role} onBlur={(e) => updateProfessional.mutate({ id: pro.id, updates: { role: e.target.value } })} />
+              </div>
+              <div>
+                <Label>Acesso</Label>
+                {pro.user_id ? (
+                  <Badge variant="default" className="flex items-center gap-1 w-fit h-10 px-3">
+                    <UserCheck className="w-3.5 h-3.5" />
+                    Vinculado
+                  </Badge>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-10 w-full"
+                    onClick={() => { setSelectedPro(pro); setUserForm({ email: "", password: "" }); setShowCreateUser(true); }}
+                  >
+                    <UserPlus className="w-4 h-4 mr-1" />
+                    Criar Acesso
+                  </Button>
+                )}
+              </div>
+              <div className="flex justify-end">
+                <Button variant="ghost" size="icon" onClick={() => deleteProfessional.mutate(pro.id)}>
+                  <Trash2 className="w-4 h-4 text-destructive" />
+                </Button>
+              </div>
+            </div>
+          ))}
+          {professionals.length === 0 && <p className="text-muted-foreground text-center py-4">Nenhum profissional cadastrado.</p>}
+        </CardContent>
+      </Card>
+
+      <Dialog open={showCreateUser} onOpenChange={setShowCreateUser}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Criar Acesso para {selectedPro?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            O profissional poderá fazer login e visualizar/gerenciar apenas sua própria agenda.
+          </p>
+          <div className="space-y-4">
+            <div>
+              <Label>Email *</Label>
+              <Input
+                type="email"
+                value={userForm.email}
+                onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                placeholder="profissional@email.com"
+              />
+            </div>
+            <div>
+              <Label>Senha *</Label>
+              <Input
+                type="password"
+                value={userForm.password}
+                onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                placeholder="Mínimo 6 caracteres"
+              />
+            </div>
+            <Button
+              className="w-full gradient-primary text-primary-foreground"
+              onClick={createProfessionalUser}
+              disabled={creating || !userForm.email.trim() || userForm.password.length < 6}
+            >
+              {creating ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
+              Criar Acesso
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
