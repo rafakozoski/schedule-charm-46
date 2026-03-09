@@ -18,6 +18,8 @@ export function AdminSettingsTab() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newCatName, setNewCatName] = useState("");
+  const [editCat, setEditCat] = useState<any>(null);
+  const [catForm, setCatForm] = useState({ name: "", slug: "" });
   const [editBiz, setEditBiz] = useState<any>(null);
   const [showNewBiz, setShowNewBiz] = useState(false);
   const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
