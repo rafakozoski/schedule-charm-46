@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, Loader2, Store, Users, Package, Clock, ImagePlus, X, UserPlus, UserCheck } from "lucide-react";
 import { toast } from "sonner";
-import { ESTADOS, getCitiesByState, getNeighborhoods, getAllCitiesWithState, findStateByCity } from "@/lib/locations";
+import { useLocations } from "@/hooks/useLocations";
 
 const DAY_NAMES = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
