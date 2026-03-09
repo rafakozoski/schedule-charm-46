@@ -5,7 +5,7 @@ import { useAuth } from "./useAuth";
 export function useUserRole() {
   const { user } = useAuth();
 
-  const { data: roles = [], isLoading } = useQuery({
+  const { data: roles = [], isPending } = useQuery({
     queryKey: ["user-roles", user?.id],
     queryFn: async () => {
       if (!user) return [];
