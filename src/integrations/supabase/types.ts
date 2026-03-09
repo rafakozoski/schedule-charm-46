@@ -224,6 +224,30 @@ export type Database = {
         }
         Relationships: []
       }
+      locations: {
+        Row: {
+          city: string
+          id: string
+          neighborhood: string
+          state_code: string
+          state_name: string
+        }
+        Insert: {
+          city: string
+          id?: string
+          neighborhood: string
+          state_code: string
+          state_name: string
+        }
+        Update: {
+          city?: string
+          id?: string
+          neighborhood?: string
+          state_code?: string
+          state_name?: string
+        }
+        Relationships: []
+      }
       professional_services: {
         Row: {
           professional_id: string
