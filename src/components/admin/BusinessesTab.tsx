@@ -14,6 +14,7 @@ import { Plus, Trash2, Star, Loader2, Store, Edit, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocations } from "@/hooks/useLocations";
 
 export function BusinessesTab() {
   const { user } = useAuth();
