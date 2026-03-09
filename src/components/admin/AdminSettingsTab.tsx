@@ -20,8 +20,11 @@ export function AdminSettingsTab() {
   const [newCatName, setNewCatName] = useState("");
   const [editBiz, setEditBiz] = useState<any>(null);
   const [showNewBiz, setShowNewBiz] = useState(false);
-  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" };
+  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
   const [bizForm, setBizForm] = useState(emptyBizForm);
+  const [ownerLookup, setOwnerLookup] = useState<{ id: string; email: string } | null>(null);
+  const [ownerLookupError, setOwnerLookupError] = useState("");
+  const [lookingUpOwner, setLookingUpOwner] = useState(false);
 
   const { data: categories = [], isLoading: catLoading } = useQuery({
     queryKey: ["categories"],
