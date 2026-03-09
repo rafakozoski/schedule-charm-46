@@ -185,6 +185,31 @@ export function BusinessSettingsTab() {
     onError: (err: any) => toast.error(err.message),
   });
 
+  const deleteBusiness = useMutation({
+    mutationFn: async () => {
+      if (!business) return;
+      // Delete related data first
+      await supabase.from("availability").delete().eq("business_id", business.id);
+      await supabase.from("professional_services").delete().in(
+        "professional_id",
+        (await supabase.from("professionals").select("id").eq("business_id", business.id)).data?.map((p: any) => p.id) || []
+      );
+      await supabase.from("bookings").delete().eq("business_id", business.id);
+      await supabase.from("services").delete().eq("business_id", business.id);
+      await supabase.from("professionals").delete().eq("business_id", business.id);
+      await supabase.from("subscriptions").delete().eq("business_id", business.id);
+      const { error } = await supabase.from("businesses").delete().eq("id", business.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      localStorage.removeItem("selectedBusinessId");
+      queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
+      refetchBiz();
+      toast.success("Empresa excluída com sucesso");
+    },
+    onError: (err: any) => toast.error("Erro ao excluir: " + err.message),
+  });
+
   const addService = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("services").insert({ name: "Novo Serviço", business_id: business!.id, price: 0, duration: 30 });
