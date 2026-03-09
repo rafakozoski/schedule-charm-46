@@ -27,7 +27,7 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const { isAdmin, loading: roleLoading } = useUserRole();
   if (loading || roleLoading) return <div className="min-h-screen flex items-center justify-center"><div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>;
-  if (!user) return <Navigate to="/admin/login" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   if (!isAdmin) return <Navigate to="/painel" replace />;
   return <>{children}</>;
 }

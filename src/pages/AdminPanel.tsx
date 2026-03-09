@@ -1,10 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarCheck, Settings, Store, Package, Users } from "lucide-react";
+import { CalendarCheck, Settings, Store, Package, Users, ListChecks } from "lucide-react";
 import { motion } from "framer-motion";
 import { AdminSettingsTab } from "@/components/admin/AdminSettingsTab";
 import { BookingsTab } from "@/components/admin/BookingsTab";
 import { BusinessesTab } from "@/components/admin/BusinessesTab";
 import { UsersTab } from "@/components/admin/UsersTab";
+import { ServiceCatalogTab } from "@/components/admin/ServiceCatalogTab";
 
 export default function AdminPanel() {
   return (
@@ -27,6 +28,10 @@ export default function AdminPanel() {
               <Users className="w-4 h-4" />
               Usuários
             </TabsTrigger>
+            <TabsTrigger value="service-catalog" className="gap-2">
+              <ListChecks className="w-4 h-4" />
+              Catálogo Serviços
+            </TabsTrigger>
             <TabsTrigger value="all-bookings" className="gap-2">
               <Package className="w-4 h-4" />
               Todas Reservas
@@ -43,6 +48,10 @@ export default function AdminPanel() {
 
           <TabsContent value="users">
             <UsersTab />
+          </TabsContent>
+
+          <TabsContent value="service-catalog">
+            <ServiceCatalogTab />
           </TabsContent>
 
           <TabsContent value="all-bookings">
