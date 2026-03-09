@@ -7,7 +7,7 @@ interface BannerCarouselProps {
   halfHeight?: boolean;
 }
 
-export function BannerCarousel({ position }: BannerCarouselProps) {
+export function BannerCarousel({ position, halfHeight = false }: BannerCarouselProps) {
   const { data: banners = [] } = useQuery({
     queryKey: ["banners", position],
     queryFn: async () => {
