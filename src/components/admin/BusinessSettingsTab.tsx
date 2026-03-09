@@ -126,7 +126,15 @@ export function BusinessSettingsTab() {
     enabled: !!business,
   });
 
-  const seedAvailability = async (businessId: string) => {
+  const { data: serviceCatalog = [] } = useQuery({
+    queryKey: ["service-catalog"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("service_catalog").select("name").order("name");
+      if (error) throw error;
+      return data.map((s) => s.name);
+    },
+  });
+
     const { data: existing } = await supabase.from("availability").select("id").eq("business_id", businessId).limit(1);
     if (!existing || existing.length === 0) {
       await supabase.from("availability").insert(
