@@ -127,6 +127,12 @@ export function BannersTab() {
                   <SelectContent>
                     <SelectItem value="top">Acima dos Destaques</SelectItem>
                     <SelectItem value="middle">Acima dos Estabelecimentos</SelectItem>
+                    <SelectItem value="bottom">Final da Página (50% altura)</SelectItem>
+                  </SelectContent>
+                </Select>
+                  <SelectContent>
+                    <SelectItem value="top">Acima dos Destaques</SelectItem>
+                    <SelectItem value="middle">Acima dos Estabelecimentos</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
