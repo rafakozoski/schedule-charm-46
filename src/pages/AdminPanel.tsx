@@ -72,6 +72,10 @@ export default function AdminPanel() {
             <BannersTab />
           </TabsContent>
 
+          <TabsContent value="sales">
+            <SalesTab />
+          </TabsContent>
+
           <TabsContent value="settings">
             <AdminSettingsTab />
           </TabsContent>
