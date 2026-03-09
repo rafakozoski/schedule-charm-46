@@ -23,6 +23,6 @@ export function useUserRole() {
     isAdmin: roles.includes("admin"),
     isOwner: roles.includes("owner"),
     roles,
-    loading: isLoading,
+    loading: isPending,
   };
 }
