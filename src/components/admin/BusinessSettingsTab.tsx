@@ -337,8 +337,8 @@ export function BusinessSettingsTab() {
               >
                 <SelectTrigger><SelectValue placeholder="Selecione o estado" /></SelectTrigger>
                 <SelectContent>
-                  {Object.entries(ESTADOS).sort((a, b) => a[1].nome.localeCompare(b[1].nome)).map(([uf, { nome }]) => (
-                    <SelectItem key={uf} value={uf}>{nome} ({uf})</SelectItem>
+                  {dbStates.map((s) => (
+                    <SelectItem key={s.code} value={s.code}>{s.name} ({s.code})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
