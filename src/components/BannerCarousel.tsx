@@ -24,8 +24,10 @@ export function BannerCarousel({ position, halfHeight = false }: BannerCarouselP
 
   if (banners.length === 0) return null;
 
+  const maxH = halfHeight ? "max-h-32" : "max-h-64";
+
   const content = banners.length === 1 ? (
-    <BannerImage banner={banners[0]} />
+    <BannerImage banner={banners[0]} maxH={maxH} />
   ) : (
     <Carousel opts={{ loop: true }} className="w-full">
       <CarouselContent>
