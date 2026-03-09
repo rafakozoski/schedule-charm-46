@@ -140,10 +140,12 @@ export function BusinessesTab() {
 
   const openEditBiz = (biz: any) => {
     setEditBiz(biz);
+    const stateKey = states.find(s => s.name === biz.state)?.code || biz.state || "";
     setBizForm({
       name: biz.name || "",
       slug: biz.slug || "",
       category: biz.category || "beleza",
+      state: stateKey,
       city: biz.city || "",
       neighborhood: biz.neighborhood || "",
       phone: biz.phone || "",
