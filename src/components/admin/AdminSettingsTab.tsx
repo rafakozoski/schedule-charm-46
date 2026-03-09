@@ -20,8 +20,11 @@ export function AdminSettingsTab() {
   const [newCatName, setNewCatName] = useState("");
   const [editBiz, setEditBiz] = useState<any>(null);
   const [showNewBiz, setShowNewBiz] = useState(false);
-  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "" };
+  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
   const [bizForm, setBizForm] = useState(emptyBizForm);
+  const [ownerLookup, setOwnerLookup] = useState<{ id: string; email: string } | null>(null);
+  const [ownerLookupError, setOwnerLookupError] = useState("");
+  const [lookingUpOwner, setLookingUpOwner] = useState(false);
 
   const { data: categories = [], isLoading: catLoading } = useQuery({
     queryKey: ["categories"],
@@ -87,7 +90,7 @@ export function AdminSettingsTab() {
   });
 
   const createBusiness = useMutation({
-    mutationFn: async (form: typeof emptyBizForm) => {
+    mutationFn: async ({ form, ownerId }: { form: typeof emptyBizForm; ownerId?: string }) => {
       if (!form.name.trim() || !form.slug.trim()) throw new Error("Nome e slug são obrigatórios");
       const { error } = await supabase.from("businesses").insert({
         name: form.name.trim(),
@@ -97,7 +100,7 @@ export function AdminSettingsTab() {
         neighborhood: form.neighborhood,
         phone: form.phone,
         description: form.description,
-        owner_id: user?.id,
+        owner_id: ownerId || user?.id,
       });
       if (error) throw error;
     },
@@ -105,6 +108,8 @@ export function AdminSettingsTab() {
       queryClient.invalidateQueries({ queryKey: ["all-businesses"] });
       setShowNewBiz(false);
       setBizForm(emptyBizForm);
+      setOwnerLookup(null);
+      setOwnerLookupError("");
       toast.success("Empresa criada com sucesso!");
     },
     onError: (err: any) => toast.error(err.message),
@@ -145,6 +150,28 @@ export function AdminSettingsTab() {
     },
   });
 
+  const lookupOwner = async (email: string) => {
+    if (!email.trim()) { setOwnerLookup(null); setOwnerLookupError(""); return; }
+    setLookingUpOwner(true);
+    setOwnerLookupError("");
+    setOwnerLookup(null);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lookup-user-by-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+        body: JSON.stringify({ email }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Erro ao buscar usuário");
+      setOwnerLookup(json);
+    } catch (err: any) {
+      setOwnerLookupError(err.message);
+    } finally {
+      setLookingUpOwner(false);
+    }
+  };
+
   const openEditBiz = (biz: any) => {
     setEditBiz(biz);
     setBizForm({
@@ -155,7 +182,10 @@ export function AdminSettingsTab() {
       neighborhood: biz.neighborhood || "",
       phone: biz.phone || "",
       description: biz.description || "",
+      ownerEmail: "",
     });
+    setOwnerLookup(null);
+    setOwnerLookupError("");
   };
 
   if (catLoading || bizLoading) {
@@ -381,10 +411,40 @@ export function AdminSettingsTab() {
               <Label>Descrição</Label>
               <Textarea value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} placeholder="Descrição da empresa" />
             </div>
+            <div>
+              <Label>Proprietário (email do usuário)</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={bizForm.ownerEmail}
+                  onChange={(e) => { setBizForm({ ...bizForm, ownerEmail: e.target.value }); setOwnerLookup(null); setOwnerLookupError(""); }}
+                  placeholder="email@exemplo.com (opcional)"
+                  type="email"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => lookupOwner(bizForm.ownerEmail)}
+                  disabled={lookingUpOwner || !bizForm.ownerEmail.trim()}
+                >
+                  {lookingUpOwner ? <Loader2 className="w-4 h-4 animate-spin" /> : "Buscar"}
+                </Button>
+              </div>
+              {ownerLookup && (
+                <p className="text-xs text-primary mt-1 font-medium">✓ Usuário encontrado: {ownerLookup.email}</p>
+              )}
+              {ownerLookupError && (
+                <p className="text-xs text-destructive mt-1">{ownerLookupError}</p>
+              )}
+              {!bizForm.ownerEmail.trim() && (
+                <p className="text-xs text-muted-foreground mt-1">Se vazio, será atribuído ao seu usuário admin.</p>
+              )}
+            </div>
             <Button
               className="w-full gradient-primary text-primary-foreground"
-              onClick={() => createBusiness.mutate(bizForm)}
-              disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim()}
+              onClick={() => createBusiness.mutate({ form: bizForm, ownerId: ownerLookup?.id })}
+              disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim() || (!!bizForm.ownerEmail.trim() && !ownerLookup)}
             >
               {createBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
               Criar Empresa
