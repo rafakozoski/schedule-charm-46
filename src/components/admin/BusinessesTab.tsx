@@ -18,10 +18,11 @@ import { useLocations } from "@/hooks/useLocations";
 
 export function BusinessesTab() {
   const { user } = useAuth();
+  const { states, getCities, getNeighborhoods, findStateByCity, getAllCitiesWithState } = useLocations();
   const queryClient = useQueryClient();
   const [editBiz, setEditBiz] = useState<any>(null);
   const [showNewBiz, setShowNewBiz] = useState(false);
-  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
+  const emptyBizForm = { name: "", slug: "", category: "beleza", state: "", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
   const [bizForm, setBizForm] = useState(emptyBizForm);
   const [ownerLookup, setOwnerLookup] = useState<{ id: string; email: string } | null>(null);
   const [ownerLookupError, setOwnerLookupError] = useState("");
