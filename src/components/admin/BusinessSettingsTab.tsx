@@ -52,11 +52,10 @@ export function BusinessSettingsTab() {
     }
   }, [business]);
 
-  const allCities = getAllCitiesWithState();
-  const selectedCities = form.state ? getCitiesByState(form.state) : [];
-  const citiesToShow = form.state ? selectedCities.map(c => ({ city: c, stateKey: form.state, stateName: ESTADOS[form.state]?.nome })) : allCities;
+  const { states: dbStates, getCities, getNeighborhoods: getDbNeighborhoods, findStateByCity: dbFindState, getAllCitiesWithState } = useLocations();
+  const citiesToShow = form.state ? getCities(form.state).map(c => ({ city: c, stateKey: form.state, stateName: dbStates.find(s => s.code === form.state)?.name || "" })) : getAllCitiesWithState();
   const selectedNeighborhoods = (form.state && form.city)
-    ? getNeighborhoods(form.state, form.city)
+    ? getDbNeighborhoods(form.city, form.state)
     : [];
 
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
