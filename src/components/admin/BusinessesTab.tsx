@@ -361,15 +361,41 @@ export function BusinessesTab() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Cidade</Label>
-                <Input value={bizForm.city} onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })} />
-              </div>
-              <div>
-                <Label>Bairro</Label>
-                <Input value={bizForm.neighborhood} onChange={(e) => setBizForm({ ...bizForm, neighborhood: e.target.value })} />
-              </div>
+            <div>
+              <Label>Estado</Label>
+              <Select value={bizForm.state} onValueChange={(v) => setBizForm({ ...bizForm, state: v, city: "", neighborhood: "" })}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {states.map((s) => (
+                    <SelectItem key={s.code} value={s.code}>{s.name} ({s.code})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Cidade</Label>
+              <Select value={bizForm.city} onValueChange={(v) => {
+                const sk = findStateByCity(v);
+                setBizForm({ ...bizForm, city: v, neighborhood: "", state: sk || bizForm.state });
+              }}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {(bizForm.state ? getCities(bizForm.state) : getAllCitiesWithState().map(c => c.city)).map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Bairro</Label>
+              <Select value={bizForm.neighborhood} onValueChange={(v) => setBizForm({ ...bizForm, neighborhood: v })} disabled={!bizForm.city}>
+                <SelectTrigger><SelectValue placeholder={bizForm.city ? "Selecione" : "Escolha a cidade"} /></SelectTrigger>
+                <SelectContent>
+                  {getNeighborhoods(bizForm.city, bizForm.state).map((n) => (
+                    <SelectItem key={n} value={n}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Telefone</Label>
