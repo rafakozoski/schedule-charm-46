@@ -15,10 +15,16 @@ import type { Database } from "@/integrations/supabase/types";
 
 type AppRole = Database["public"]["Enums"]["app_role"];
 
+const PLANS = [
+  { value: "none", label: "Sem plano", priceId: "" },
+  { value: "basic", label: "Básico (R$ 29,90/mês)", priceId: "price_1T7Pe5JwkjwrgXgTJQBG5DKM" },
+  { value: "pro", label: "Pro (R$ 49,90/mês)", priceId: "price_1T7PecJwkjwrgXgTB9n8JMTb" },
+];
+
 export function UsersTab() {
   const queryClient = useQueryClient();
   const [showNewUser, setShowNewUser] = useState(false);
-  const [userForm, setUserForm] = useState({ email: "", password: "", role: "owner" as AppRole });
+  const [userForm, setUserForm] = useState({ email: "", password: "", role: "owner" as AppRole, plan: "none" });
   const [creating, setCreating] = useState(false);
 
   const { data: userRoles = [], isLoading } = useQuery({
