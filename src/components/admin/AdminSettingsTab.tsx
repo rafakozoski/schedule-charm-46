@@ -411,10 +411,40 @@ export function AdminSettingsTab() {
               <Label>Descrição</Label>
               <Textarea value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} placeholder="Descrição da empresa" />
             </div>
+            <div>
+              <Label>Proprietário (email do usuário)</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={bizForm.ownerEmail}
+                  onChange={(e) => { setBizForm({ ...bizForm, ownerEmail: e.target.value }); setOwnerLookup(null); setOwnerLookupError(""); }}
+                  placeholder="email@exemplo.com (opcional)"
+                  type="email"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  onClick={() => lookupOwner(bizForm.ownerEmail)}
+                  disabled={lookingUpOwner || !bizForm.ownerEmail.trim()}
+                >
+                  {lookingUpOwner ? <Loader2 className="w-4 h-4 animate-spin" /> : "Buscar"}
+                </Button>
+              </div>
+              {ownerLookup && (
+                <p className="text-xs text-green-600 mt-1">✓ Usuário encontrado: {ownerLookup.email}</p>
+              )}
+              {ownerLookupError && (
+                <p className="text-xs text-destructive mt-1">{ownerLookupError}</p>
+              )}
+              {!bizForm.ownerEmail.trim() && (
+                <p className="text-xs text-muted-foreground mt-1">Se vazio, será atribuído ao seu usuário admin.</p>
+              )}
+            </div>
             <Button
               className="w-full gradient-primary text-primary-foreground"
-              onClick={() => createBusiness.mutate(bizForm)}
-              disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim()}
+              onClick={() => createBusiness.mutate({ form: bizForm, ownerId: ownerLookup?.id })}
+              disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim() || (!!bizForm.ownerEmail.trim() && !ownerLookup)}
             >
               {createBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
               Criar Empresa
