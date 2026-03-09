@@ -6,6 +6,7 @@ import { BusinessSettingsTab } from "@/components/admin/BusinessSettingsTab";
 import { BusinessBookingsTab } from "@/components/admin/BusinessBookingsTab";
 import { BusinessPaymentTab } from "@/components/admin/BusinessPaymentTab";
 import { useMyBusiness } from "@/hooks/useMyBusiness";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function BusinessPanel() {
   const { isProfessional } = useMyBusiness();
