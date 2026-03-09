@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, Loader2, Store, Users, Package, Clock, ImagePlus, X, UserPlus, UserCheck } from "lucide-react";
 import { toast } from "sonner";
-import { ESTADOS, getCitiesByState, getNeighborhoods, getAllCitiesWithState, findStateByCity } from "@/lib/locations";
+import { useLocations } from "@/hooks/useLocations";
 
 const DAY_NAMES = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
@@ -35,7 +35,7 @@ export function BusinessSettingsTab() {
   useEffect(() => {
     if (business) {
       const b = business as any;
-      const stateKey = Object.keys(ESTADOS).find(k => ESTADOS[k].nome === (b as any).state) || (b as any).state || "";
+      const stateKey = dbStates.find(s => s.name === b.state)?.code || b.state || "";
       setForm({
         name: b.name || "",
         slug: b.slug || "",
@@ -52,11 +52,10 @@ export function BusinessSettingsTab() {
     }
   }, [business]);
 
-  const allCities = getAllCitiesWithState();
-  const selectedCities = form.state ? getCitiesByState(form.state) : [];
-  const citiesToShow = form.state ? selectedCities.map(c => ({ city: c, stateKey: form.state, stateName: ESTADOS[form.state]?.nome })) : allCities;
+  const { states: dbStates, getCities, getNeighborhoods: getDbNeighborhoods, findStateByCity: dbFindState, getAllCitiesWithState } = useLocations();
+  const citiesToShow = form.state ? getCities(form.state).map(c => ({ city: c, stateKey: form.state, stateName: dbStates.find(s => s.code === form.state)?.name || "" })) : getAllCitiesWithState();
   const selectedNeighborhoods = (form.state && form.city)
-    ? getNeighborhoods(form.state, form.city)
+    ? getDbNeighborhoods(form.city, form.state)
     : [];
 
   const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +157,7 @@ export function BusinessSettingsTab() {
     mutationFn: async () => {
       const payload = {
         ...form,
-        state: form.state ? ESTADOS[form.state]?.nome : form.state,
+        state: form.state ? (dbStates.find(s => s.code === form.state)?.name || form.state) : form.state,
       };
       if (business) {
         const { error } = await supabase.from("businesses").update(payload).eq("id", business.id);
@@ -338,8 +337,8 @@ export function BusinessSettingsTab() {
               >
                 <SelectTrigger><SelectValue placeholder="Selecione o estado" /></SelectTrigger>
                 <SelectContent>
-                  {Object.entries(ESTADOS).sort((a, b) => a[1].nome.localeCompare(b[1].nome)).map(([uf, { nome }]) => (
-                    <SelectItem key={uf} value={uf}>{nome} ({uf})</SelectItem>
+                  {dbStates.map((s) => (
+                    <SelectItem key={s.code} value={s.code}>{s.name} ({s.code})</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -351,7 +350,7 @@ export function BusinessSettingsTab() {
               <Select
                 value={form.city}
                 onValueChange={(v) => {
-                  const stateKey = findStateByCity(v);
+                  const stateKey = dbFindState(v);
                   setForm({ ...form, city: v, neighborhood: "", state: stateKey || form.state });
                 }}
               >

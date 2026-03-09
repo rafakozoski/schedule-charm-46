@@ -14,13 +14,15 @@ import { Plus, Trash2, Star, Loader2, Store, Edit, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocations } from "@/hooks/useLocations";
 
 export function BusinessesTab() {
   const { user } = useAuth();
+  const { states, getCities, getNeighborhoods, findStateByCity, getAllCitiesWithState } = useLocations();
   const queryClient = useQueryClient();
   const [editBiz, setEditBiz] = useState<any>(null);
   const [showNewBiz, setShowNewBiz] = useState(false);
-  const emptyBizForm = { name: "", slug: "", category: "beleza", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
+  const emptyBizForm = { name: "", slug: "", category: "beleza", state: "", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
   const [bizForm, setBizForm] = useState(emptyBizForm);
   const [ownerLookup, setOwnerLookup] = useState<{ id: string; email: string } | null>(null);
   const [ownerLookupError, setOwnerLookupError] = useState("");
@@ -91,10 +93,12 @@ export function BusinessesTab() {
   const createBusiness = useMutation({
     mutationFn: async ({ form, ownerId }: { form: typeof emptyBizForm; ownerId?: string }) => {
       if (!form.name.trim() || !form.slug.trim()) throw new Error("Nome e slug são obrigatórios");
+      const stateName = states.find(s => s.code === form.state)?.name || form.state;
       const { error } = await supabase.from("businesses").insert({
         name: form.name.trim(),
         slug: form.slug.trim(),
         category: form.category,
+        state: stateName,
         city: form.city,
         neighborhood: form.neighborhood,
         phone: form.phone,
@@ -138,10 +142,12 @@ export function BusinessesTab() {
 
   const openEditBiz = (biz: any) => {
     setEditBiz(biz);
+    const stateKey = states.find(s => s.name === biz.state)?.code || biz.state || "";
     setBizForm({
       name: biz.name || "",
       slug: biz.slug || "",
       category: biz.category || "beleza",
+      state: stateKey,
       city: biz.city || "",
       neighborhood: biz.neighborhood || "",
       phone: biz.phone || "",
@@ -271,15 +277,41 @@ export function BusinessesTab() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Cidade</Label>
-                <Input value={bizForm.city} onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })} />
-              </div>
-              <div>
-                <Label>Bairro</Label>
-                <Input value={bizForm.neighborhood} onChange={(e) => setBizForm({ ...bizForm, neighborhood: e.target.value })} />
-              </div>
+            <div>
+              <Label>Estado</Label>
+              <Select value={bizForm.state} onValueChange={(v) => setBizForm({ ...bizForm, state: v, city: "", neighborhood: "" })}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {states.map((s) => (
+                    <SelectItem key={s.code} value={s.code}>{s.name} ({s.code})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Cidade</Label>
+              <Select value={bizForm.city} onValueChange={(v) => {
+                const sk = findStateByCity(v);
+                setBizForm({ ...bizForm, city: v, neighborhood: "", state: sk || bizForm.state });
+              }}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {(bizForm.state ? getCities(bizForm.state) : getAllCitiesWithState().map(c => c.city)).map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Bairro</Label>
+              <Select value={bizForm.neighborhood} onValueChange={(v) => setBizForm({ ...bizForm, neighborhood: v })} disabled={!bizForm.city}>
+                <SelectTrigger><SelectValue placeholder={bizForm.city ? "Selecione" : "Escolha a cidade"} /></SelectTrigger>
+                <SelectContent>
+                  {getNeighborhoods(bizForm.city, bizForm.state).map((n) => (
+                    <SelectItem key={n} value={n}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Telefone</Label>
@@ -291,7 +323,12 @@ export function BusinessesTab() {
             </div>
             <Button
               className="w-full gradient-primary text-primary-foreground"
-              onClick={() => editBiz && updateBusiness.mutate({ id: editBiz.id, updates: bizForm })}
+              onClick={() => {
+                if (!editBiz) return;
+                const { ownerEmail, state, ...rest } = bizForm;
+                const stateName = states.find(s => s.code === state)?.name || state;
+                updateBusiness.mutate({ id: editBiz.id, updates: { ...rest, state: stateName } });
+              }}
               disabled={updateBusiness.isPending}
             >
               {updateBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
@@ -331,15 +368,41 @@ export function BusinessesTab() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Cidade</Label>
-                <Input value={bizForm.city} onChange={(e) => setBizForm({ ...bizForm, city: e.target.value })} />
-              </div>
-              <div>
-                <Label>Bairro</Label>
-                <Input value={bizForm.neighborhood} onChange={(e) => setBizForm({ ...bizForm, neighborhood: e.target.value })} />
-              </div>
+            <div>
+              <Label>Estado</Label>
+              <Select value={bizForm.state} onValueChange={(v) => setBizForm({ ...bizForm, state: v, city: "", neighborhood: "" })}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {states.map((s) => (
+                    <SelectItem key={s.code} value={s.code}>{s.name} ({s.code})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Cidade</Label>
+              <Select value={bizForm.city} onValueChange={(v) => {
+                const sk = findStateByCity(v);
+                setBizForm({ ...bizForm, city: v, neighborhood: "", state: sk || bizForm.state });
+              }}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {(bizForm.state ? getCities(bizForm.state) : getAllCitiesWithState().map(c => c.city)).map((c) => (
+                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Bairro</Label>
+              <Select value={bizForm.neighborhood} onValueChange={(v) => setBizForm({ ...bizForm, neighborhood: v })} disabled={!bizForm.city}>
+                <SelectTrigger><SelectValue placeholder={bizForm.city ? "Selecione" : "Escolha a cidade"} /></SelectTrigger>
+                <SelectContent>
+                  {getNeighborhoods(bizForm.city, bizForm.state).map((n) => (
+                    <SelectItem key={n} value={n}>{n}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Telefone</Label>
