@@ -38,6 +38,10 @@ export default function AdminPanel() {
               <Package className="w-4 h-4" />
               Todas Reservas
             </TabsTrigger>
+            <TabsTrigger value="sales" className="gap-2">
+              <DollarSign className="w-4 h-4" />
+              Vendas
+            </TabsTrigger>
             <TabsTrigger value="banners" className="gap-2">
               <Image className="w-4 h-4" />
               Banners
