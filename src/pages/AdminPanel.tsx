@@ -63,6 +63,10 @@ export default function AdminPanel() {
             <BookingsTab />
           </TabsContent>
 
+          <TabsContent value="banners">
+            <BannersTab />
+          </TabsContent>
+
           <TabsContent value="settings">
             <AdminSettingsTab />
           </TabsContent>

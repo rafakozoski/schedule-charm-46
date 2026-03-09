@@ -171,6 +171,9 @@ export default function Index() {
         </section>
       )}
 
+      {/* Banner middle */}
+      <BannerCarousel position="middle" />
+
       {/* Results */}
       <section className="py-12 px-6 bg-secondary/30">
         <div className="container mx-auto">
