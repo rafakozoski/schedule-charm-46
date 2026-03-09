@@ -127,6 +127,7 @@ export function BannersTab() {
                   <SelectContent>
                     <SelectItem value="top">Acima dos Destaques</SelectItem>
                     <SelectItem value="middle">Acima dos Estabelecimentos</SelectItem>
+                    <SelectItem value="bottom">Final da Página (50% altura)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -162,7 +163,7 @@ export function BannersTab() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium">
-                      {banner.position === "top" ? "Acima dos Destaques" : "Acima dos Estabelecimentos"}
+                      {banner.position === "top" ? "Acima dos Destaques" : banner.position === "middle" ? "Acima dos Estabelecimentos" : "Final da Página (50%)"}
                     </p>
                     {banner.link_url && (
                       <p className="text-xs text-muted-foreground truncate flex items-center gap-1">

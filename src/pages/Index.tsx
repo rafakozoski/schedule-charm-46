@@ -194,6 +194,9 @@ export default function Index() {
           )}
         </div>
       </section>
+
+      {/* Banner bottom */}
+      <BannerCarousel position="bottom" halfHeight />
     </div>
   );
 }

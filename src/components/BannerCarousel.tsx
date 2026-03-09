@@ -3,10 +3,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 interface BannerCarouselProps {
-  position: "top" | "middle";
+  position: "top" | "middle" | "bottom";
+  halfHeight?: boolean;
 }
 
-export function BannerCarousel({ position }: BannerCarouselProps) {
+export function BannerCarousel({ position, halfHeight = false }: BannerCarouselProps) {
   const { data: banners = [] } = useQuery({
     queryKey: ["banners", position],
     queryFn: async () => {
@@ -23,14 +24,16 @@ export function BannerCarousel({ position }: BannerCarouselProps) {
 
   if (banners.length === 0) return null;
 
+  const maxH = halfHeight ? "max-h-32" : "max-h-64";
+
   const content = banners.length === 1 ? (
-    <BannerImage banner={banners[0]} />
+    <BannerImage banner={banners[0]} maxH={maxH} />
   ) : (
     <Carousel opts={{ loop: true }} className="w-full">
       <CarouselContent>
         {banners.map((banner) => (
           <CarouselItem key={banner.id}>
-            <BannerImage banner={banner} />
+            <BannerImage banner={banner} maxH={maxH} />
           </CarouselItem>
         ))}
       </CarouselContent>
@@ -46,12 +49,12 @@ export function BannerCarousel({ position }: BannerCarouselProps) {
   );
 }
 
-function BannerImage({ banner }: { banner: any }) {
+function BannerImage({ banner, maxH = "max-h-64" }: { banner: any; maxH?: string }) {
   const img = (
     <img
       src={banner.image_url}
       alt="Banner"
-      className="w-full h-auto max-h-64 object-cover rounded-xl"
+      className={`w-full h-auto ${maxH} object-cover rounded-xl`}
       loading="lazy"
     />
   );
