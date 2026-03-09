@@ -10,17 +10,29 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function BusinessPanel() {
   const { isProfessional } = useMyBusiness();
+  const { user } = useAuth();
+
+  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "";
 
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-6 py-10">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <h1 className="text-3xl font-bold mb-2">
-            {isProfessional ? "Minha Agenda" : "Meu Negócio"}
-          </h1>
-          <p className="text-muted-foreground mb-8">
-            {isProfessional ? "Gerencie seus agendamentos" : "Gerencie seu negócio"}
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold mb-1">
+                {isProfessional ? "Minha Agenda" : "Meu Negócio"}
+              </h1>
+              <p className="text-muted-foreground">
+                {isProfessional ? "Gerencie seus agendamentos" : "Gerencie seu negócio"}
+              </p>
+            </div>
+            <Badge variant="outline" className="flex items-center gap-2 px-3 py-2 text-sm font-normal w-fit">
+              <User className="w-4 h-4 text-primary" />
+              <span className="font-medium">{displayName}</span>
+              <span className="text-muted-foreground">· {user?.email}</span>
+            </Badge>
+          </div>
         </motion.div>
 
         <Tabs defaultValue="agenda" className="space-y-6">
