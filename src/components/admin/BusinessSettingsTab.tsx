@@ -21,7 +21,7 @@ const DAY_NAMES = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", 
 
 export function BusinessSettingsTab() {
   const { user } = useAuth();
-  const { business, isLoading: bizLoading, refetch: refetchBiz } = useMyBusiness();
+  const { business, isLoading: bizLoading, refetch: refetchBiz, ownedBusinesses } = useMyBusiness();
   const queryClient = useQueryClient();
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
