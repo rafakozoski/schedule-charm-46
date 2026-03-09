@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Search, MapPin, Star, ArrowRight, Sparkles, Scissors, Heart, Car, PawPrint } from "lucide-react";
@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,6 +17,7 @@ const ICON_MAP: Record<string, any> = {
 export default function Index() {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>("all");
 
   const { data: categories = [] } = useQuery({
     queryKey: ["categories"],
@@ -38,6 +40,15 @@ export default function Index() {
     },
   });
 
+  // Extrair lista de cidades únicas dos estabelecimentos cadastrados
+  const availableCities = useMemo(() => {
+    const cities = new Set<string>();
+    businesses.forEach(b => {
+      if (b.city) cities.add(b.city);
+    });
+    return Array.from(cities).sort();
+  }, [businesses]);
+
   const filtered = businesses.filter((b) => {
     const matchSearch =
       !search ||
@@ -45,7 +56,8 @@ export default function Index() {
       b.city?.toLowerCase().includes(search.toLowerCase()) ||
       b.neighborhood?.toLowerCase().includes(search.toLowerCase());
     const matchCategory = !activeCategory || b.category === activeCategory;
-    return matchSearch && matchCategory;
+    const matchCity = selectedCity === "all" || b.city === selectedCity;
+    return matchSearch && matchCategory && matchCity;
   });
 
   const featured = filtered.filter((b) => b.featured);
@@ -79,14 +91,28 @@ export default function Index() {
                 </Button>
               </Link>
             </div>
-            <div className="relative max-w-lg mx-auto">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Busque por nome, cidade ou bairro..."
-                className="pl-12 h-14 text-base rounded-full bg-card border-0 shadow-lg"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+            <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Input
+                  placeholder="Busque por nome ou bairro..."
+                  className="pl-12 h-14 text-base rounded-full bg-card border-0 shadow-lg"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+              <Select value={selectedCity} onValueChange={setSelectedCity}>
+                <SelectTrigger className="h-14 w-full sm:w-48 rounded-full bg-card border-0 shadow-lg">
+                  <MapPin className="w-4 h-4 mr-2 text-muted-foreground" />
+                  <SelectValue placeholder="Cidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as cidades</SelectItem>
+                  {availableCities.map((city) => (
+                    <SelectItem key={city} value={city}>{city}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </motion.div>
         </div>
