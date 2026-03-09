@@ -150,6 +150,9 @@ export default function Index() {
         </div>
       </section>
 
+      {/* Banner top */}
+      <BannerCarousel position="top" />
+
       {/* Featured */}
       {featured.length > 0 && (
         <section className="py-12 px-6">
