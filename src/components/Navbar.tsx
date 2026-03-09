@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Calendar, LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
+import { Calendar, LayoutDashboard, LogIn, LogOut, Menu, Shield, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/admin");
+  const isPanel = location.pathname.startsWith("/admin") || location.pathname.startsWith("/painel");
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
+  const panelLink = isAdmin ? "/admin" : "/painel";
 
   return (
     <nav className="sticky top-0 z-50 bg-card/80 backdrop-blur-lg border-b">
@@ -20,21 +23,37 @@ export function Navbar() {
           <span className="font-bold text-lg" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Reservagram</span>
         </Link>
         <div className="hidden md:flex items-center gap-3">
-          {isAdmin && user && (
+          {isPanel && user && (
             <>
-              <Link to="/admin">
+              <Link to={panelLink}>
                 <Button variant="default" size="sm">
                   <LayoutDashboard className="w-4 h-4 mr-2" />
                   Painel
                 </Button>
               </Link>
+              {isAdmin && !location.pathname.startsWith("/admin") && (
+                <Link to="/admin">
+                  <Button variant="outline" size="sm">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
+              {isAdmin && location.pathname.startsWith("/admin") && (
+                <Link to="/painel">
+                  <Button variant="outline" size="sm">
+                    <LayoutDashboard className="w-4 h-4 mr-2" />
+                    Meu Negócio
+                  </Button>
+                </Link>
+              )}
               <Button variant="ghost" size="sm" onClick={signOut}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Sair
               </Button>
             </>
           )}
-          {!isAdmin && (
+          {!isPanel && (
             <>
               <Link to="/">
                 <Button variant="ghost" size="sm">
@@ -48,7 +67,7 @@ export function Navbar() {
                 </Button>
               </Link>
               {user ? (
-                <Link to="/admin">
+                <Link to={panelLink}>
                   <Button variant="default" size="sm" className="gradient-primary text-primary-foreground">
                     <LayoutDashboard className="w-4 h-4 mr-2" />
                     Painel
@@ -79,12 +98,20 @@ export function Navbar() {
           </Link>
           {user ? (
             <>
-              <Link to="/admin" onClick={() => setOpen(false)}>
+              <Link to={panelLink} onClick={() => setOpen(false)}>
                 <Button variant="ghost" className="w-full justify-start">
                   <LayoutDashboard className="w-4 h-4 mr-2" />
                   Painel
                 </Button>
               </Link>
+              {isAdmin && (
+                <Link to="/admin" onClick={() => setOpen(false)}>
+                  <Button variant="ghost" className="w-full justify-start">
+                    <Shield className="w-4 h-4 mr-2" />
+                    Admin
+                  </Button>
+                </Link>
+              )}
               <Button variant="ghost" className="w-full justify-start" onClick={() => { signOut(); setOpen(false); }}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Sair
