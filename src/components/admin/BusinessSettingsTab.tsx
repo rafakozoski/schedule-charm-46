@@ -162,12 +162,14 @@ export function BusinessSettingsTab() {
       if (business) {
         const { error } = await supabase.from("businesses").update(payload).eq("id", business.id);
         if (error) throw error;
-        // Seed availability if missing for existing business
         await seedAvailability(business.id);
       } else {
-        const { error } = await supabase.from("businesses").insert({ ...payload, owner_id: user!.id });
+        const { data: newBiz, error } = await supabase
+          .from("businesses")
+          .insert({ ...payload, owner_id: user!.id })
+          .select("id")
+          .single();
         if (error) throw error;
-        const { data: newBiz } = await supabase.from("businesses").select("id").eq("owner_id", user!.id).single();
         if (newBiz) {
           await seedAvailability(newBiz.id);
         }
@@ -176,6 +178,7 @@ export function BusinessSettingsTab() {
     onSuccess: () => {
       refetchBiz();
       queryClient.invalidateQueries({ queryKey: ["biz-availability"] });
+      queryClient.invalidateQueries({ queryKey: ["my-businesses"] });
       toast.success(business ? "Dados atualizados!" : "Empresa criada!");
     },
     onError: (err: any) => toast.error(err.message),
@@ -529,7 +532,7 @@ function ProfessionalsSection({ business, professionals, addProfessional, update
         </CardHeader>
         <CardContent className="space-y-3">
           {professionals.map((pro: any) => (
-            <div key={pro.id} className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3 rounded-lg border items-end">
+            <div key={pro.id} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 rounded-lg border items-end">
               <div>
                 <Label>Nome</Label>
                 <Input defaultValue={pro.name} onBlur={(e) => updateProfessional.mutate({ id: pro.id, updates: { name: e.target.value } })} />
@@ -537,6 +540,16 @@ function ProfessionalsSection({ business, professionals, addProfessional, update
               <div>
                 <Label>Função</Label>
                 <Input defaultValue={pro.role} onBlur={(e) => updateProfessional.mutate({ id: pro.id, updates: { role: e.target.value } })} />
+              </div>
+              <div>
+                <Label>Ver toda agenda</Label>
+                <div className="flex items-center gap-2 h-10">
+                  <Switch
+                    checked={pro.view_all_bookings ?? false}
+                    onCheckedChange={(checked) => updateProfessional.mutate({ id: pro.id, updates: { view_all_bookings: checked } })}
+                  />
+                  <span className="text-xs text-muted-foreground">{pro.view_all_bookings ? "Sim" : "Não"}</span>
+                </div>
               </div>
               <div>
                 <Label>Acesso</Label>

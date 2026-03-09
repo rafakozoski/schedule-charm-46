@@ -1,7 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarCheck, Store, CreditCard, User } from "lucide-react";
+import { CalendarCheck, Store, CreditCard, User, Building2, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BusinessSettingsTab } from "@/components/admin/BusinessSettingsTab";
 import { BusinessBookingsTab } from "@/components/admin/BusinessBookingsTab";
 import { BusinessPaymentTab } from "@/components/admin/BusinessPaymentTab";
@@ -9,7 +10,7 @@ import { useMyBusiness } from "@/hooks/useMyBusiness";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function BusinessPanel() {
-  const { isProfessional } = useMyBusiness();
+  const { isProfessional, ownedBusinesses, selectedBusinessId, selectBusiness, business } = useMyBusiness();
   const { user } = useAuth();
 
   const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split("@")[0] || "";
@@ -27,11 +28,29 @@ export default function BusinessPanel() {
                 {isProfessional ? "Gerencie seus agendamentos" : "Gerencie seu negócio"}
               </p>
             </div>
-            <Badge variant="outline" className="flex items-center gap-2 px-3 py-2 text-sm font-normal w-fit">
-              <User className="w-4 h-4 text-primary" />
-              <span className="font-medium">{displayName}</span>
-              <span className="text-muted-foreground">· {user?.email}</span>
-            </Badge>
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Business selector for owners with multiple businesses */}
+              {!isProfessional && ownedBusinesses.length > 1 && (
+                <Select value={selectedBusinessId || ""} onValueChange={selectBusiness}>
+                  <SelectTrigger className="w-52 bg-card">
+                    <Building2 className="w-4 h-4 mr-2 text-primary" />
+                    <SelectValue placeholder="Selecionar unidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ownedBusinesses.map((b) => (
+                      <SelectItem key={b.id} value={b.id}>
+                        {b.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+              <Badge variant="outline" className="flex items-center gap-2 px-3 py-2 text-sm font-normal w-fit">
+                <User className="w-4 h-4 text-primary" />
+                <span className="font-medium">{displayName}</span>
+                <span className="text-muted-foreground hidden sm:inline">· {user?.email}</span>
+              </Badge>
+            </div>
           </div>
         </motion.div>
 
