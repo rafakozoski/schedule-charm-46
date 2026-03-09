@@ -7,6 +7,8 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const PRO_PRODUCT_ID = "prod_U5aqds34W5m2LE";
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -34,6 +36,8 @@ serve(async (req) => {
 
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     if (customers.data.length === 0) {
+      await supabaseClient.from("businesses").update({ featured: false }).eq("owner_id", user.id);
+
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -47,6 +51,8 @@ serve(async (req) => {
     });
 
     if (subscriptions.data.length === 0) {
+      await supabaseClient.from("businesses").update({ featured: false }).eq("owner_id", user.id);
+
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -54,6 +60,9 @@ serve(async (req) => {
 
     const subscription = subscriptions.data[0];
     const productId = subscription.items.data[0].price.product;
+    const isProPlan = productId === PRO_PRODUCT_ID;
+
+    await supabaseClient.from("businesses").update({ featured: isProPlan }).eq("owner_id", user.id);
 
     return new Response(JSON.stringify({
       subscribed: true,
