@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Calendar, LayoutDashboard, LogIn, LogOut, Menu, Shield, X } from "lucide-react";
+import { LayoutDashboard, LogIn, LogOut, Menu, Shield, X } from "lucide-react";
+import logoImg from "@/assets/logo-reservagram.png";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
