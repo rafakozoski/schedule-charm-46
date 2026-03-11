@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, Calendar, Clock, User, Mail, Phone, Download, Share2 } from "lucide-react";
+import { CheckCircle, Calendar, Clock, User, Mail, Phone, Download, Share2, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import logoImg from "@/assets/logo-reservagram-bc.png";
 
 interface Props {
   serviceId: string | null;
@@ -12,9 +13,10 @@ interface Props {
   date: Date | undefined;
   time: string | null;
   clientInfo: { name: string; email: string; phone: string };
+  businessId?: string;
 }
 
-export function ConfirmationStep({ serviceId, professionalId, date, time, clientInfo }: Props) {
+export function ConfirmationStep({ serviceId, professionalId, date, time, clientInfo, businessId }: Props) {
   const receiptRef = useRef<HTMLDivElement>(null);
 
   const { data: service } = useQuery({
@@ -37,19 +39,32 @@ export function ConfirmationStep({ serviceId, professionalId, date, time, client
     enabled: !!professionalId,
   });
 
+  const { data: business } = useQuery({
+    queryKey: ["business-confirmation", businessId],
+    queryFn: async () => {
+      if (!businessId) return null;
+      const { data } = await supabase.from("businesses").select("name, address, city, state, neighborhood").eq("id", businessId).single();
+      return data;
+    },
+    enabled: !!businessId,
+  });
+
+  const businessAddress = business
+    ? [business.address, business.neighborhood, business.city, business.state].filter(Boolean).join(", ")
+    : null;
+
   const generateImage = async (): Promise<Blob | null> => {
-    // Dynamically import html2canvas only when needed
     try {
       const html2canvas = (await import("html2canvas")).default;
       if (!receiptRef.current) return null;
       const canvas = await html2canvas(receiptRef.current, {
-        backgroundColor: "#0f172a",
+        backgroundColor: "#f3f4f6",
         scale: 2,
         useCORS: true,
       });
       return await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
     } catch {
-      toast.error("Erro ao gerar imagem. Instale html2canvas: npm i html2canvas");
+      toast.error("Erro ao gerar imagem.");
       return null;
     }
   };
@@ -82,7 +97,6 @@ export function ConfirmationStep({ serviceId, professionalId, date, time, client
         // user cancelled share
       }
     } else {
-      // Fallback: download
       handleDownload();
       toast.info("Compartilhamento não suportado neste dispositivo. Imagem salva.");
     }
@@ -108,63 +122,77 @@ export function ConfirmationStep({ serviceId, professionalId, date, time, client
         Um e-mail de confirmação foi enviado para <strong>{clientInfo.email}</strong>
       </p>
 
-      {/* Receipt card — this is what gets captured as image */}
+      {/* Receipt card — responsive, light gray bg, rounded */}
       <div
         ref={receiptRef}
-        className="bg-slate-900 rounded-xl p-6 text-left max-w-sm mx-auto space-y-3 border border-slate-700"
+        className="bg-gray-100 rounded-2xl p-5 sm:p-6 text-left w-full max-w-sm mx-auto space-y-3 border border-gray-200"
         style={{ fontFamily: "system-ui, sans-serif" }}
       >
+        {/* Header with logo */}
         <div className="flex items-center justify-between mb-4">
-          <span className="text-white font-bold text-lg">Comprovante</span>
-          <span className="text-emerald-400 text-xs font-semibold uppercase tracking-wider bg-emerald-400/10 px-2 py-1 rounded-full">
+          <img src={logoImg} alt="Reservagram" className="h-6 sm:h-7" />
+          <span className="text-emerald-600 text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-emerald-100 px-2 py-1 rounded-full">
             ✓ Confirmado
           </span>
         </div>
 
+        {business?.name && (
+          <div className="text-gray-800 font-bold text-sm sm:text-base mb-1">{business.name}</div>
+        )}
+
+        {businessAddress && (
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-500">
+            <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0 mt-0.5" />
+            <span className="leading-snug">{businessAddress}</span>
+          </div>
+        )}
+
+        <hr className="border-gray-300 my-2" />
+
         {service && (
-          <div className="flex items-center gap-3 text-sm text-slate-200">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700">
             <Calendar className="w-4 h-4 text-primary shrink-0" />
-            <span className="font-medium">{service.name}</span>
-            <span className="ml-auto font-bold text-primary">R$ {Number(service.price).toFixed(2)}</span>
+            <span className="font-medium truncate">{service.name}</span>
+            <span className="ml-auto font-bold text-primary whitespace-nowrap">R$ {Number(service.price).toFixed(2)}</span>
           </div>
         )}
         {professional && (
-          <div className="flex items-center gap-3 text-sm text-slate-200">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700">
             <User className="w-4 h-4 text-primary shrink-0" />
             <span>{professional.name}</span>
           </div>
         )}
         {date && time && (
-          <div className="flex items-center gap-3 text-sm text-slate-200">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700">
             <Clock className="w-4 h-4 text-primary shrink-0" />
             <span className="capitalize">{formattedDate} às {time}</span>
           </div>
         )}
 
-        <hr className="border-slate-700 my-3" />
+        <hr className="border-gray-300 my-2" />
 
-        <div className="flex items-center gap-3 text-sm text-slate-300">
-          <User className="w-4 h-4 text-slate-400 shrink-0" />
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+          <User className="w-4 h-4 text-gray-400 shrink-0" />
           <span>{clientInfo.name}</span>
         </div>
-        <div className="flex items-center gap-3 text-sm text-slate-300">
-          <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>{clientInfo.email}</span>
+        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+          <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+          <span className="truncate">{clientInfo.email}</span>
         </div>
         {clientInfo.phone && (
-          <div className="flex items-center gap-3 text-sm text-slate-300">
-            <Phone className="w-4 h-4 text-slate-400 shrink-0" />
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+            <Phone className="w-4 h-4 text-gray-400 shrink-0" />
             <span>{clientInfo.phone}</span>
           </div>
         )}
 
-        <div className="pt-3 text-center text-xs text-slate-500">
+        <div className="pt-3 text-center text-[10px] sm:text-xs text-gray-400">
           Gerado em {new Date().toLocaleDateString("pt-BR")} • Reservagram
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="flex gap-3 justify-center mt-6">
+      <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
         <Button variant="outline" className="gap-2" onClick={handleDownload}>
           <Download className="w-4 h-4" />
           Salvar imagem

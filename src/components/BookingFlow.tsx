@@ -185,6 +185,7 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
                   date={selectedDate}
                   time={selectedTime}
                   clientInfo={clientInfo}
+                  businessId={businessId}
                 />
               )}
             </motion.div>
