@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import logoImg from "@/assets/logo-reservagram-bc.png";
+import logoImg from "@/assets/logo-reservagram.png";
 
 interface Props {
   serviceId: string | null;
