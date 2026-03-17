@@ -120,7 +120,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Reservagram <noreply@seudominio.com.br>",
+        from: "Reservagram <noreply@reservagram.com.br>",
         to: [client_email],
         subject: `✅ Agendamento confirmado — ${service_name || "Reservagram"}`,
         html,
