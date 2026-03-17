@@ -58,8 +58,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (password.length < 6) {
-      return new Response(JSON.stringify({ error: "Senha deve ter pelo menos 6 caracteres" }), {
+    if (password.length < 8) {
+      return new Response(JSON.stringify({ error: "Senha deve ter pelo menos 8 caracteres" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -139,7 +139,8 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("create-user-manual error:", err);
+    return new Response(JSON.stringify({ error: "Erro interno. Tente novamente." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

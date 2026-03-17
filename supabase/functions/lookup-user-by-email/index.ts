@@ -72,7 +72,8 @@ Deno.serve(async (req) => {
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
-    return new Response(JSON.stringify({ error: err.message }), {
+    console.error("lookup-user-by-email error:", err);
+    return new Response(JSON.stringify({ error: "Erro interno. Tente novamente." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

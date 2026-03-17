@@ -45,7 +45,8 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error("customer-portal error:", error);
+    return new Response(JSON.stringify({ error: "Erro interno. Tente novamente." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

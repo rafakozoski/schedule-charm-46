@@ -120,7 +120,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Reservagram <noreply@seudominio.com.br>",
+        from: "Reservagram <noreply@reservagram.com.br>",
         to: [client_email],
         subject: `✅ Agendamento confirmado — ${service_name || "Reservagram"}`,
         html,
@@ -137,7 +137,7 @@ serve(async (req) => {
     });
   } catch (err: any) {
     console.error("send-booking-email error:", err);
-    return new Response(JSON.stringify({ error: err.message }), {
+    return new Response(JSON.stringify({ error: "Erro interno. Tente novamente." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
