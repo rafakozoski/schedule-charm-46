@@ -102,6 +102,24 @@ export function BusinessBookingsTab() {
           <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5" />Agenda</CardTitle>
           <div className="flex gap-2 flex-wrap items-center">
             <ManualBookingDialog businessId={business.id} />
+            <div className="flex border rounded-md overflow-hidden">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="w-4 h-4" /> Lista
+              </Button>
+              <Button
+                variant={viewMode === "calendar" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("calendar")}
+              >
+                <CalendarDays className="w-4 h-4" /> Semana
+              </Button>
+            </div>
             {/* Professional filter - only show for owners, not professionals */}
             {!isProfessional && professionals.length > 1 && (
               <Select value={professionalFilter} onValueChange={setProfessionalFilter}>
