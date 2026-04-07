@@ -6,10 +6,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar, CheckCircle, Clock, XCircle, Loader2, Users, Building2 } from "lucide-react";
+import { Calendar, CheckCircle, Clock, XCircle, Loader2, Users, Building2, List, CalendarDays } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { ManualBookingDialog } from "./ManualBookingDialog";
+import { WeeklyCalendarView } from "./WeeklyCalendarView";
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Pendente", variant: "secondary" },
@@ -22,6 +23,7 @@ export function BusinessBookingsTab() {
   const { business, isLoading: bizLoading, isProfessional, professionalId } = useMyBusiness();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [professionalFilter, setProfessionalFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
 
   const { data: professionals = [] } = useQuery({
     queryKey: ["biz-professionals-list", business?.id],
@@ -100,6 +102,24 @@ export function BusinessBookingsTab() {
           <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5" />Agenda</CardTitle>
           <div className="flex gap-2 flex-wrap items-center">
             <ManualBookingDialog businessId={business.id} />
+            <div className="flex border rounded-md overflow-hidden">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("list")}
+              >
+                <List className="w-4 h-4" /> Lista
+              </Button>
+              <Button
+                variant={viewMode === "calendar" ? "default" : "ghost"}
+                size="sm"
+                className="rounded-none gap-1.5"
+                onClick={() => setViewMode("calendar")}
+              >
+                <CalendarDays className="w-4 h-4" /> Semana
+              </Button>
+            </div>
             {/* Professional filter - only show for owners, not professionals */}
             {!isProfessional && professionals.length > 1 && (
               <Select value={professionalFilter} onValueChange={setProfessionalFilter}>
@@ -143,7 +163,14 @@ export function BusinessBookingsTab() {
               </p>
             </div>
           )}
-          {filtered.length === 0 ? (
+
+          {viewMode === "calendar" ? (
+            <WeeklyCalendarView
+              bookings={filtered}
+              onUpdateStatus={(id, status) => updateStatus.mutate({ id, status })}
+              isProfessional={isProfessional}
+            />
+          ) : filtered.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">Nenhuma reserva encontrada.</p>
           ) : (
             <div className="overflow-x-auto">
