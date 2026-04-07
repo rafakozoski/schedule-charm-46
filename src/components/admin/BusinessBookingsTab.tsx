@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, CheckCircle, Clock, XCircle, Loader2, Users, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { ManualBookingDialog } from "./ManualBookingDialog";
 
 const STATUS_MAP: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   pending: { label: "Pendente", variant: "secondary" },
