@@ -23,6 +23,7 @@ export function BusinessBookingsTab() {
   const { business, isLoading: bizLoading, isProfessional, professionalId } = useMyBusiness();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [professionalFilter, setProfessionalFilter] = useState<string>("all");
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
 
   const { data: professionals = [] } = useQuery({
     queryKey: ["biz-professionals-list", business?.id],
