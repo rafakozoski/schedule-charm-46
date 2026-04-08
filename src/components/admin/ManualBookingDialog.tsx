@@ -79,14 +79,23 @@ export function ManualBookingDialog({ businessId }: ManualBookingDialogProps) {
     return `${String(h).padStart(2, "0")}:${m}`;
   });
 
+  const resolvedClient = () => {
+    if (clientMode === "select" && selectedClientId) {
+      const c = clients.find((cl) => cl.id === selectedClientId);
+      return { name: c?.name || "", email: c?.email || "", phone: c?.phone || "" };
+    }
+    return { name: clientName.trim(), email: clientEmail.trim(), phone: clientPhone.trim() };
+  };
+
   const createBooking = useMutation({
     mutationFn: async () => {
       if (!date) throw new Error("Data obrigatória");
+      const client = resolvedClient();
       const { error } = await supabase.from("bookings").insert({
         business_id: businessId,
-        client_name: clientName.trim(),
-        client_email: clientEmail.trim(),
-        client_phone: clientPhone.trim(),
+        client_name: client.name,
+        client_email: client.email,
+        client_phone: client.phone,
         service_id: serviceId || null,
         professional_id: professionalId || null,
         booking_date: format(date, "yyyy-MM-dd"),
