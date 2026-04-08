@@ -45,6 +45,20 @@ export function ManualBookingDialog({ businessId }: ManualBookingDialogProps) {
     enabled: open,
   });
 
+  const { data: clients = [] } = useQuery({
+    queryKey: ["manual-bk-clients", businessId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("clients")
+        .select("id, name, email, phone")
+        .eq("business_id", businessId)
+        .order("name");
+      if (error) throw error;
+      return data;
+    },
+    enabled: open,
+  });
+
   const { data: professionals = [] } = useQuery({
     queryKey: ["manual-bk-professionals", businessId],
     queryFn: async () => {
