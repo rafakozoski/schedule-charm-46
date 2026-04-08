@@ -91,14 +91,14 @@ export function BusinessBookingsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card><CardContent className="pt-6"><div className="text-2xl font-bold">{stats.total}</div><p className="text-xs text-muted-foreground">Total</p></CardContent></Card>
         <Card><CardContent className="pt-6"><div className="text-2xl font-bold text-yellow-600">{stats.pending}</div><p className="text-xs text-muted-foreground">Pendentes</p></CardContent></Card>
         <Card><CardContent className="pt-6"><div className="text-2xl font-bold text-green-600">{stats.confirmed}</div><p className="text-xs text-muted-foreground">Confirmados</p></CardContent></Card>
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between flex-wrap gap-3">
+        <CardHeader className="flex flex-col gap-3">
           <CardTitle className="flex items-center gap-2"><Calendar className="w-5 h-5" />Agenda</CardTitle>
           <div className="flex gap-2 flex-wrap items-center">
             <ManualBookingDialog businessId={business.id} />
