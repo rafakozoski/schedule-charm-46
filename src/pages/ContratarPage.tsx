@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, Link2, TrendingUp, Zap, ArrowRight, CheckCircle2, Star } from "lucide-react";
-import logoImg from "@/assets/logo-reservagram-bc.png";
+import logoImg from "@/assets/logo-agendagram-bc.png";
 
 const BENEFITS = [
   {
@@ -18,7 +18,7 @@ const BENEFITS = [
   {
     icon: Link2,
     title: "Link exclusivo para divulgar",
-    desc: "Receba um link personalizado (reservagram.app/seunegocio) para compartilhar nas redes sociais e anúncios.",
+    desc: "Receba um link personalizado (agendagram.com.br/seunegocio) para compartilhar nas redes sociais e anúncios.",
   },
   {
     icon: TrendingUp,
@@ -50,7 +50,7 @@ export default function ContratarPage() {
             transition={{ duration: 0.5 }}
             className="max-w-3xl mx-auto text-center"
           >
-            <img src={logoImg} alt="Reservagram" className="h-10 mx-auto mb-8" />
+            <img src={logoImg} alt="Agendagram" className="h-10 mx-auto mb-8" />
             <h1
               className="text-3xl md:text-5xl font-extrabold text-primary-foreground mb-5 leading-tight"
               style={{ fontFamily: "'Space Grotesk', sans-serif" }}
@@ -87,7 +87,7 @@ export default function ContratarPage() {
           className="text-2xl md:text-4xl font-bold text-center mb-4"
           style={{ fontFamily: "'Space Grotesk', sans-serif" }}
         >
-          Por que escolher o <span className="text-primary">Reservagram</span>?
+          Por que escolher o <span className="text-primary">Agendagram</span>?
         </motion.h2>
         <p className="text-muted-foreground text-center mb-12 max-w-xl mx-auto">
           Tudo que você precisa para profissionalizar seu atendimento e faturar mais.

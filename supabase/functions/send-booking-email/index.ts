@@ -16,7 +16,7 @@ async function sendEmail(to: string, subject: string, html: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Reservagram <noreply@reservagram.com.br>",
+      from: "Agendagram <noreply@agendagram.com.br>",
       to: [to],
       subject,
       html,
@@ -80,7 +80,7 @@ serve(async (req) => {
                 <span style="font-size:28px;">✓</span>
               </div>
               <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Agendamento confirmado!</h1>
-              <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">${business_name || "Reservagram"}</p>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">${business_name || "Agendagram"}</p>
             </td>
           </tr>
           <tr>
@@ -122,7 +122,7 @@ serve(async (req) => {
           </tr>
           <tr>
             <td style="padding:16px 32px;text-align:center;border-top:1px solid #1e293b;">
-              <p style="color:#475569;font-size:11px;margin:0;">Reservagram · Sistema de Agendamentos</p>
+              <p style="color:#475569;font-size:11px;margin:0;">Agendagram · Sistema de Agendamentos</p>
             </td>
           </tr>
         </table>
@@ -152,7 +152,7 @@ serve(async (req) => {
                 <span style="font-size:28px;">📅</span>
               </div>
               <h1 style="margin:0;color:#fff;font-size:22px;font-weight:700;">Novo agendamento recebido!</h1>
-              <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">${business_name || "Reservagram"}</p>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.75);font-size:14px;">${business_name || "Agendagram"}</p>
             </td>
           </tr>
           <tr>
@@ -206,7 +206,7 @@ serve(async (req) => {
           </tr>
           <tr>
             <td style="padding:16px 32px;text-align:center;border-top:1px solid #1e293b;">
-              <p style="color:#475569;font-size:11px;margin:0;">Reservagram · Sistema de Agendamentos</p>
+              <p style="color:#475569;font-size:11px;margin:0;">Agendagram · Sistema de Agendamentos</p>
             </td>
           </tr>
         </table>
@@ -219,7 +219,7 @@ serve(async (req) => {
     // Envia email ao cliente
     await sendEmail(
       client_email,
-      `✅ Agendamento confirmado — ${service_name || "Reservagram"}`,
+      `✅ Agendamento confirmado — ${service_name || "Agendagram"}`,
       clientHtml
     );
 
@@ -243,7 +243,7 @@ serve(async (req) => {
           if (ownerEmail) {
             await sendEmail(
               ownerEmail,
-              `📅 Novo agendamento — ${client_name} | ${service_name || "Reservagram"}`,
+              `📅 Novo agendamento — ${client_name} | ${service_name || "Agendagram"}`,
               businessHtml
             );
           }

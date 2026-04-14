@@ -16,7 +16,7 @@ export default function AdminPanel() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <h1 className="text-3xl font-bold mb-2">Painel Administrativo</h1>
           <p className="text-muted-foreground mb-8">
-            Gestão global da plataforma Reservagram
+            Gestão global da plataforma Agendagram
           </p>
         </motion.div>
 

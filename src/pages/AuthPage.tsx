@@ -69,7 +69,7 @@ export default function AuthPage() {
             </div>
             <CardTitle className="text-2xl">{isLogin ? "Entrar" : "Criar conta"}</CardTitle>
             <CardDescription>
-              {isLogin ? "Acesse o painel do seu negócio" : "Crie sua conta no Reservagram"}
+              {isLogin ? "Acesse o painel do seu negócio" : "Crie sua conta no Agendagram"}
             </CardDescription>
           </CardHeader>
           <CardContent>

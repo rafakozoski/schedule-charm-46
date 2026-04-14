@@ -83,7 +83,7 @@ export default function Index() {
               Agende em <span className="text-accent">segundos</span>, não em minutos.
             </h1>
             <p className="text-lg text-primary-foreground/70 mb-8">
-              Descubra os melhores profissionais perto de você e reserve online com o <strong>Reservagram</strong>.
+              Descubra os melhores profissionais perto de você e reserve online com o <strong>Agendagram</strong>.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
               <div className="relative flex-1">

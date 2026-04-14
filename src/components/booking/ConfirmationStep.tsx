@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import logoImg from "@/assets/logo-reservagram.png";
+import logoImg from "@/assets/logo-agendagram.png";
 
 interface Props {
   serviceId: string | null;
@@ -130,7 +130,7 @@ export function ConfirmationStep({ serviceId, professionalId, date, time, client
       >
         {/* Header with logo */}
         <div className="flex items-center justify-between mb-4">
-          <img src={logoImg} alt="Reservagram" className="h-6 sm:h-7" />
+          <img src={logoImg} alt="Agendagram" className="h-6 sm:h-7" />
           <span className="text-emerald-600 text-[10px] sm:text-xs font-semibold uppercase tracking-wider bg-emerald-100 px-2 py-1 rounded-full">
             ✓ Confirmado
           </span>
@@ -187,7 +187,7 @@ export function ConfirmationStep({ serviceId, professionalId, date, time, client
         )}
 
         <div className="pt-3 text-center text-[10px] sm:text-xs text-gray-400">
-          Gerado em {new Date().toLocaleDateString("pt-BR")} • Reservagram
+          Gerado em {new Date().toLocaleDateString("pt-BR")} • Agendagram
         </div>
       </div>
 
