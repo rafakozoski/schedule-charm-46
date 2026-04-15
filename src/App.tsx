@@ -72,7 +72,7 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/planos" element={<PricingPage />} />
           <Route path="/contratar" element={<ContratarPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/admin/login" element={<AuthPage />} />

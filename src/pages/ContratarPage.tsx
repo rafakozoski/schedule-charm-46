@@ -64,7 +64,7 @@ export default function ContratarPage() {
               Comece em minutos, sem complicação.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/pricing">
+              <Link to="/planos">
                 <Button size="lg" className="gradient-primary text-primary-foreground text-lg px-8 py-6 shadow-glow">
                   Começar agora
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -158,7 +158,7 @@ export default function ContratarPage() {
             ))}
           </div>
 
-          <Link to="/pricing">
+          <Link to="/planos">
             <Button size="lg" className="gradient-primary text-primary-foreground text-lg px-10 py-6 shadow-glow">
               Ver planos e começar
               <ArrowRight className="w-5 h-5 ml-2" />
