@@ -66,7 +66,7 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
       }
 
       // Insere o agendamento
-      const { error } = await supabase.from("bookings").insert({
+      const { data: insertedBooking, error } = await supabase.from("bookings").insert({
         client_name: clientInfo.name,
         client_email: clientInfo.email,
         client_phone: clientInfo.phone,
@@ -77,32 +77,13 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
         booking_time: selectedTime,
         status: "pending",
         business_id: businessId ?? null,
-      });
+      }).select("id").single();
       if (error) throw error;
 
-      // Busca dados para o email
-      const [{ data: serviceData }, { data: professionalData }, { data: businessData }] = await Promise.all([
-        supabase.from("services").select("name, price").eq("id", selectedService).single(),
-        supabase.from("professionals").select("name").eq("id", selectedProfessional).single(),
-        businessId
-          ? supabase.from("businesses").select("name").eq("id", businessId).single()
-          : Promise.resolve({ data: null }),
-      ]);
-
-      // Dispara email de confirmação (sem bloquear o fluxo se falhar)
+      // Dispara email de confirmação passando apenas o booking_id
       supabase.functions
         .invoke("send-booking-email", {
-          body: {
-            client_name: clientInfo.name,
-            client_email: clientInfo.email,
-            service_name: serviceData?.name,
-            professional_name: professionalData?.name,
-            booking_date: bookingDate,
-            booking_time: selectedTime,
-            business_name: (businessData as any)?.name,
-            price: serviceData?.price,
-            business_id: businessId ?? null,
-          },
+          body: { booking_id: insertedBooking.id },
         })
         .catch((err) => console.warn("Email não enviado:", err));
 
