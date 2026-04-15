@@ -43,7 +43,7 @@ serve(async (req) => {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: `${req.headers.get("origin")}/admin?checkout=success`,
-      cancel_url: `${req.headers.get("origin")}/pricing?checkout=cancelled`,
+      cancel_url: `${req.headers.get("origin")}/planos?checkout=cancelled`,
     };
 
     // Apply coupon if provided

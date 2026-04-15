@@ -58,7 +58,7 @@ export function Navbar() {
                   Início
                 </Button>
               </Link>
-              <Link to="/pricing">
+              <Link to="/planos">
                 <Button variant="ghost" size="sm">
                   Planos
                 </Button>
@@ -90,7 +90,7 @@ export function Navbar() {
           <Link to="/" onClick={() => setOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">Início</Button>
           </Link>
-          <Link to="/pricing" onClick={() => setOpen(false)}>
+          <Link to="/planos" onClick={() => setOpen(false)}>
             <Button variant="ghost" className="w-full justify-start">Planos</Button>
           </Link>
           {user ?

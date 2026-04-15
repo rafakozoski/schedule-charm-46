@@ -58,7 +58,7 @@ export function SegmentLPTemplate({
               {heroSubtitle}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/pricing">
+              <Link to="/planos">
                 <Button size="lg" className="gradient-primary text-primary-foreground text-lg px-8 py-6 shadow-glow w-full sm:w-auto">
                   Testar plataforma
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -137,7 +137,7 @@ export function SegmentLPTemplate({
                       <p className="text-sm text-muted-foreground mb-6">
                         Impulsione seu crescimento! Ganhe prioridade máxima nas buscas e exiba um banner personalizado no topo do seu perfil e na área de {nichoTitle.toLowerCase()}.
                       </p>
-                      <Link to="/pricing">
+                      <Link to="/planos">
                         <Button variant="outline" className="w-full border-accent text-accent hover:bg-accent hover:text-white">Conhecer o Plano Destaque</Button>
                       </Link>
                   </div>
@@ -228,7 +228,7 @@ export function SegmentLPTemplate({
             ))}
           </div>
 
-          <Link to="/pricing">
+          <Link to="/planos">
             <Button size="lg" className="gradient-primary text-primary-foreground text-lg px-10 py-6 shadow-glow">
               Ver planos e começar
               <ArrowRight className="w-5 h-5 ml-2" />
