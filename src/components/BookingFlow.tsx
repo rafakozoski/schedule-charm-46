@@ -70,6 +70,7 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
         client_name: clientInfo.name,
         client_email: clientInfo.email,
         client_phone: clientInfo.phone,
+        notes: clientInfo.notes || "",
         service_id: selectedService,
         professional_id: selectedProfessional,
         booking_date: bookingDate,
