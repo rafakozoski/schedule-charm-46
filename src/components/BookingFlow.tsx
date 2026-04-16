@@ -85,7 +85,7 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
       // Dispara email de confirmação passando apenas o booking_id
       supabase.functions
         .invoke("send-booking-email", {
-          body: { booking_id: insertedBooking.id },
+          body: { booking_id: bookingId },
         })
         .catch((err) => console.warn("Email não enviado:", err));
 
