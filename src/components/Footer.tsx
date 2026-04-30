@@ -41,7 +41,7 @@ export function Footer() {
   });
 
   return (
-    <footer className="border-t mt-12 bg-secondary-foreground">
+    <footer className="border-t mt-12 bg-secondary-foreground text-secondary">
       <div className="container mx-auto px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
           <div className="col-span-2 md:col-span-1">
@@ -54,7 +54,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm mb-3 text-foreground">Plataforma</h3>
+            <h3 className="font-semibold text-sm mb-3 text-secondary">Plataforma</h3>
             <ul className="space-y-2 text-sm">
               <li><Link to="/" className="text-muted-foreground hover:text-primary">Início</Link></li>
               <li><Link to="/planos" className="text-muted-foreground hover:text-primary">Planos</Link></li>
@@ -64,7 +64,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm mb-3 text-foreground">Para o seu segmento</h3>
+            <h3 className="font-semibold text-sm mb-3 text-secondary">Para o seu segmento</h3>
             <ul className="space-y-2 text-sm max-h-72 overflow-hidden">
               {SEGMENTS.slice(0, 10).map((s) => (
                 <li key={s.path}>
@@ -75,7 +75,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm mb-3 text-foreground">Mais segmentos</h3>
+            <h3 className="font-semibold text-sm mb-3 text-secondary">Mais segmentos</h3>
             <ul className="space-y-2 text-sm max-h-72 overflow-hidden">
               {SEGMENTS.slice(10).map((s) => (
                 <li key={s.path}>
@@ -88,7 +88,7 @@ export function Footer() {
 
         {businesses.length > 0 && (
           <div className="border-t pt-6 mb-6">
-            <h3 className="font-semibold text-sm mb-3 text-foreground">Estabelecimentos em destaque</h3>
+            <h3 className="font-semibold text-sm mb-3 text-secondary">Estabelecimentos em destaque</h3>
             <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
               {businesses.map((b) => (
                 <Link
