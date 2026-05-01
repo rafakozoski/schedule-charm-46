@@ -10,12 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Trash2, Star, Loader2, Store, Edit, Eye } from "lucide-react";
+import { Plus, Trash2, Star, Loader2, Store, Edit, Eye, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useLocations } from "@/hooks/useLocations";
 import { LocationSelector } from "@/components/LocationSelector";
+import { AdminBusinessManager } from "@/components/platform/AdminBusinessManager";
 
 export function BusinessesTab() {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ export function BusinessesTab() {
   const { states } = useLocations();
   const queryClient = useQueryClient();
   const [editBiz, setEditBiz] = useState<any>(null);
+  const [manageBiz, setManageBiz] = useState<any>(null);
   const [showNewBiz, setShowNewBiz] = useState(false);
   const emptyBizForm = { name: "", slug: "", category: "beleza", state: "", city: "", neighborhood: "", phone: "", description: "", ownerEmail: "" };
   const [bizForm, setBizForm] = useState(emptyBizForm);
@@ -236,8 +238,11 @@ export function BusinessesTab() {
                     <TableCell className="text-muted-foreground">{biz.city || "-"}</TableCell>
                     <TableCell>
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => openEditBiz(biz)} title="Editar">
+                        <Button variant="ghost" size="icon" onClick={() => openEditBiz(biz)} title="Editar dados">
                           <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => setManageBiz(biz)} title="Gerenciar serviços, profissionais e propriedade">
+                          <Settings className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="icon" asChild title="Ver página">
                           <a href={`/${biz.slug}`} target="_blank" rel="noopener noreferrer">
@@ -268,11 +273,11 @@ export function BusinessesTab() {
 
       {/* Edit Business Dialog */}
       <Dialog open={!!editBiz} onOpenChange={(open) => !open && setEditBiz(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
+        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-3 border-b">
             <DialogTitle>Editar Empresa</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 px-6 py-4 overflow-y-auto flex-1">
             <div>
               <Label>Nome</Label>
               <Input value={bizForm.name} onChange={(e) => setBizForm({ ...bizForm, name: e.target.value })} />
@@ -305,8 +310,11 @@ export function BusinessesTab() {
               <Label>Descrição</Label>
               <Input value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} />
             </div>
+          </div>
+          <div className="border-t px-6 py-3 bg-card flex justify-end gap-2 sticky bottom-0">
+            <Button variant="outline" onClick={() => setEditBiz(null)}>Cancelar</Button>
             <Button
-              className="w-full gradient-primary text-primary-foreground"
+              className="gradient-primary text-primary-foreground shadow-glow"
               onClick={() => {
                 if (!editBiz) return;
                 const { ownerEmail, state, ...rest } = bizForm;
@@ -316,7 +324,7 @@ export function BusinessesTab() {
               disabled={updateBusiness.isPending}
             >
               {updateBusiness.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-              Salvar
+              Salvar alterações
             </Button>
           </div>
         </DialogContent>
@@ -324,11 +332,11 @@ export function BusinessesTab() {
 
       {/* Create Business Dialog */}
       <Dialog open={showNewBiz} onOpenChange={setShowNewBiz}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
+        <DialogContent className="max-w-lg max-h-[85vh] flex flex-col p-0">
+          <DialogHeader className="px-6 pt-6 pb-3 border-b">
             <DialogTitle>Nova Empresa</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-4 px-6 py-4 overflow-y-auto flex-1">
             <div>
               <Label>Nome *</Label>
               <Input value={bizForm.name} onChange={(e) => {
@@ -395,8 +403,11 @@ export function BusinessesTab() {
                 <p className="text-xs text-muted-foreground mt-1">Se vazio, será atribuído ao seu usuário admin.</p>
               )}
             </div>
+          </div>
+          <div className="border-t px-6 py-3 bg-card flex justify-end gap-2 sticky bottom-0">
+            <Button variant="outline" onClick={() => setShowNewBiz(false)}>Cancelar</Button>
             <Button
-              className="w-full gradient-primary text-primary-foreground"
+              className="gradient-primary text-primary-foreground shadow-glow"
               onClick={() => createBusiness.mutate({ form: bizForm, ownerId: ownerLookup?.id })}
               disabled={createBusiness.isPending || !bizForm.name.trim() || !bizForm.slug.trim() || (!!bizForm.ownerEmail.trim() && !ownerLookup)}
             >
@@ -406,6 +417,12 @@ export function BusinessesTab() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AdminBusinessManager
+        business={manageBiz}
+        open={!!manageBiz}
+        onOpenChange={(o) => { if (!o) setManageBiz(null); }}
+      />
     </div>
   );
 }
