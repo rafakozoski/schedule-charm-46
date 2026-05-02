@@ -229,7 +229,7 @@ export function BusinessBookingsTab() {
                         )}
                       </div>
 
-                      {(booking.status !== "confirmed" || booking.status !== "cancelled") && (
+                      {booking.status !== "cancelled" && (
                         <div className="flex gap-2">
                           {booking.status !== "confirmed" && booking.status !== "cancelled" && (
                             <Button
