@@ -111,6 +111,7 @@ export function MonthCalendarView({ bookings, onUpdateStatus, isProfessional }: 
                   "min-h-[56px] sm:min-h-[72px] p-1 border-t border-l text-left transition-colors first:border-l-0 hover:bg-accent/30",
                   !inMonth && "bg-muted/20 text-muted-foreground/50",
                   isToday && "bg-primary/10",
+                  selectedDay && isSameDay(d, selectedDay) && "ring-2 ring-primary ring-inset bg-primary/15",
                 )}
               >
                 <div className={cn("text-xs font-medium", isToday && "text-primary")}>
