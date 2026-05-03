@@ -99,7 +99,7 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
   };
 
   return (
-    <section id="agendar" className="py-10 md:py-20 px-4 md:px-6">
+    <section id="agendar" className="pt-16 pb-10 md:py-20 px-2 md:px-6">
       <div className="container mx-auto max-w-3xl">
         <motion.h2
           initial={{ opacity: 0 }}
@@ -138,7 +138,7 @@ export function BookingFlow({ businessId }: { businessId?: string }) {
         </div>
 
         {/* Step Content */}
-        <div className="bg-card rounded-xl border shadow-md p-4 md:p-8 min-h-[350px]">
+        <div className="bg-card rounded-xl border shadow-md p-3 md:p-8 min-h-[350px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
