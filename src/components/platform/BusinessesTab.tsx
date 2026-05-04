@@ -311,7 +311,7 @@ export function BusinessesTab() {
               <Input value={bizForm.description} onChange={(e) => setBizForm({ ...bizForm, description: e.target.value })} />
             </div>
           </div>
-          <div className="border-t px-6 py-3 bg-card flex justify-end gap-2 sticky bottom-0">
+          <div className="border-t px-6 py-3 bg-card flex justify-end gap-2 shrink-0">
             <Button variant="outline" onClick={() => setEditBiz(null)}>Cancelar</Button>
             <Button
               className="gradient-primary text-primary-foreground shadow-glow"
