@@ -143,7 +143,7 @@ export default function Index() {
 
       {/* Featured */}
       {featured.length > 0 && (
-        <section className="py-6 md:py-12 px-3 md:px-6">
+        <section className="py-6 md:py-12 px-2 md:px-6">
           <div className="container mx-auto">
             <div className="flex items-center gap-2 mb-4 md:mb-6">
               <h2 className="text-xl md:text-2xl font-bold">Destaques</h2>
@@ -162,7 +162,7 @@ export default function Index() {
       <BannerCarousel position="middle" />
 
       {/* Results */}
-      <section className="py-6 md:py-12 px-3 md:px-6 bg-secondary/30">
+      <section className="py-6 md:py-12 px-2 md:px-6 bg-secondary/30">
         <div className="container mx-auto">
           <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             {activeCategory

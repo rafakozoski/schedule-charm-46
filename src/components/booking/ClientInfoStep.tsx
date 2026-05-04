@@ -58,16 +58,16 @@ export function ClientInfoStep({ info, onChange, onSubmit, onBack, submitting }:
         </div>
 
         <div>
-          <Label htmlFor="name">Nome completo</Label>
-          <Input id="name" placeholder="Seu nome" value={info.name} onChange={(e) => onChange({ ...info, name: e.target.value })} />
+          <Label htmlFor="name">Nome completo <span className="text-destructive">*</span></Label>
+          <Input id="name" required placeholder="Seu nome" value={info.name} onChange={(e) => onChange({ ...info, name: e.target.value })} />
         </div>
         <div>
-          <Label htmlFor="email">E-mail</Label>
-          <Input id="email" type="email" placeholder="seu@email.com" value={info.email} onChange={(e) => onChange({ ...info, email: e.target.value })} />
+          <Label htmlFor="email">E-mail <span className="text-destructive">*</span></Label>
+          <Input id="email" required type="email" placeholder="seu@email.com" value={info.email} onChange={(e) => onChange({ ...info, email: e.target.value })} />
         </div>
         <div>
-          <Label htmlFor="phone">Telefone</Label>
-          <Input id="phone" type="tel" placeholder="(11) 99999-9999" value={info.phone} onChange={(e) => onChange({ ...info, phone: e.target.value })} />
+          <Label htmlFor="phone">Telefone <span className="text-destructive">*</span></Label>
+          <Input id="phone" required type="tel" placeholder="(11) 99999-9999" value={info.phone} onChange={(e) => onChange({ ...info, phone: e.target.value })} />
         </div>
         <div>
           <Label htmlFor="notes">Observações (opcional)</Label>

@@ -27,7 +27,7 @@ export function BannerCarousel({ position }: BannerCarouselProps) {
   if (banners.length === 0) {
     if (position === "top") {
       return (
-        <section className="container mx-auto px-3 md:px-6 py-6">
+        <section className="container mx-auto px-2 md:px-6 py-6">
           <Link to="/planos" className="block">
             <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors p-6 flex items-center justify-center gap-3 text-center">
               <Crown className="w-5 h-5 text-primary shrink-0" />
@@ -58,7 +58,7 @@ export function BannerCarousel({ position }: BannerCarouselProps) {
   );
 
   return (
-    <section className="container mx-auto px-3 md:px-6 py-6">
+    <section className="container mx-auto px-2 md:px-6 py-6">
       {content}
     </section>
   );

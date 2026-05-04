@@ -150,10 +150,12 @@ export function ConfirmationStep({ serviceId, professionalId, date, time, client
         <hr className="border-gray-300 my-2" />
 
         {service && (
-          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-700 min-w-0">
-            <Calendar className="w-4 h-4 text-primary shrink-0" />
-            <span className="font-medium truncate min-w-0 flex-1">{service.name}</span>
-            <span className="font-bold text-primary whitespace-nowrap shrink-0">R$ {Number(service.price).toFixed(2)}</span>
+          <div className="flex items-start gap-2 text-xs sm:text-sm text-gray-700">
+            <Calendar className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-2">
+              <span className="font-medium break-words leading-snug">{service.name}</span>
+              <span className="font-bold text-primary whitespace-nowrap">R$ {Number(service.price).toFixed(2)}</span>
+            </div>
           </div>
         )}
         {professional && (
