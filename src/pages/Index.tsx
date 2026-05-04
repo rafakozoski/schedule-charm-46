@@ -143,7 +143,7 @@ export default function Index() {
 
       {/* Featured */}
       {featured.length > 0 && (
-        <section className="py-6 md:py-12 px-2 md:px-6">
+        <section className="py-6 md:py-12 px-6">
           <div className="container mx-auto">
             <div className="flex items-center gap-2 mb-4 md:mb-6">
               <h2 className="text-xl md:text-2xl font-bold">Destaques</h2>
@@ -162,7 +162,7 @@ export default function Index() {
       <BannerCarousel position="middle" />
 
       {/* Results */}
-      <section className="py-6 md:py-12 px-2 md:px-6 bg-secondary/30">
+      <section className="py-6 md:py-12 px-6 bg-secondary/30">
         <div className="container mx-auto">
           <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
             {activeCategory
@@ -208,11 +208,11 @@ function BusinessCard({ business, featured = false, categories = [] }: { busines
       >
         {/* Banner */}
         {business.cover_url ? (
-          <div className={`${featured ? "h-36" : "h-28"} w-full overflow-hidden`}>
+          <div className={`${featured ? "h-44 md:h-36" : "h-40 md:h-28"} w-full overflow-hidden`}>
             <img src={business.cover_url} alt={business.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           </div>
         ) : featured ? (
-          <div className="h-36 w-full gradient-accent flex items-center justify-center">
+          <div className="h-44 md:h-36 w-full gradient-accent flex items-center justify-center">
             <Star className="w-10 h-10 text-accent-foreground/40" />
           </div>
         ) : (
