@@ -404,7 +404,7 @@ export function BusinessesTab() {
               )}
             </div>
           </div>
-          <div className="border-t px-6 py-3 bg-card flex justify-end gap-2 sticky bottom-0">
+          <div className="border-t px-6 py-3 bg-card flex justify-end gap-2 shrink-0">
             <Button variant="outline" onClick={() => setShowNewBiz(false)}>Cancelar</Button>
             <Button
               className="gradient-primary text-primary-foreground shadow-glow"

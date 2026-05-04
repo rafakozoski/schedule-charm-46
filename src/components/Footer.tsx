@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logoImg from "@/assets/logo-agendagram.png";
+import logoImg from "@/assets/logo-agendagram-white.png";
 
 const SEGMENTS = [
   { label: "Salão de Beleza", path: "/sistema-de-agendamento-para-salao-de-beleza" },
