@@ -72,7 +72,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
-          <p>© {new Date().getFullYear()} Agendagram. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Agendagram | Feito com 💙 no Juvevê.</p>
           <p>agendagram.com.br</p>
         </div>
       </div>
