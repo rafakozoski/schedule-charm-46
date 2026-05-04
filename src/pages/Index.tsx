@@ -77,7 +77,7 @@ export default function Index() {
             className="max-w-2xl mx-auto text-center"
           >
             <h1 className="text-3xl md:text-5xl font-extrabold text-primary-foreground mb-3 md:mb-4 leading-tight">
-              Agende em <span className="text-accent">segundos</span>, não em minutos.
+              Agende em <span className="text-accent">segundos</span>.
             </h1>
             <p className="text-base md:text-lg text-primary-foreground/70 mb-6 md:mb-8">
               Descubra os melhores profissionais perto de você e reserve online com o <strong>Agendagram</strong>.
