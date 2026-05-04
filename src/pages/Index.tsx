@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, MapPin, Star, ArrowRight } from "lucide-react";
+import { Search, MapPin, Star, ArrowRight, BadgeCheck } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -213,7 +213,7 @@ function BusinessCard({ business, featured = false, categories = [] }: { busines
           </div>
         ) : featured ? (
           <div className="h-44 md:h-36 w-full gradient-accent flex items-center justify-center">
-            <Star className="w-10 h-10 text-accent-foreground/40" />
+            <BadgeCheck className="w-10 h-10 text-accent-foreground/40" />
           </div>
         ) : (
           <div className={`h-2 w-full gradient-primary`} />
